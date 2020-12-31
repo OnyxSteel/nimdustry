@@ -5,12 +5,13 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 ## Objectives
 
 - Experiment with ECS design, multithreading and various optimization techniques
-- Try to have a cleaner codebase than Mindustry (which isn't saying much)
+- Try to have a cleaner codebase than Mindustry *(which isn't saying much)*
 - Reimplement many mechanics, simplify others
 - Create a more deterministic transportation system
 - Experiment with RTS mechanics, like direct unit control and true fog of war
 - Learn more about Nim and lower-level programming
 - Return to pixel art, simplify the drawing process
+- See if it's feasible to avoid all text and UI *(both as a challenge and for technical reasons)*
 
 # Compiling
 

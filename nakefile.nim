@@ -15,10 +15,10 @@ task "pack", "Pack textures":
 
 task "debug", "Debug build":
   runTask("pack")
-  shell &"nim r -d:nimTypeNames -d:debug {app}"
+  shell &"nim r -d:nimTypeNames -d:debug src/{app}"
 
 task "release", "Release build":
-  shell &"nim c -r -d:release -d:danger -d:noFont -o:build/{app} {app}"
+  shell &"nim c -r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"
 
 task "web", "Deploy web build":
   createDir "build/web"
