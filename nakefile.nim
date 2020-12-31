@@ -15,7 +15,7 @@ task "pack", "Pack textures":
 
 task "debug", "Debug build":
   runTask("pack")
-  shell &"nim r -d:nimTypeNames -d:debug src/{app}"
+  shell &"nim r -d:debug src/{app}"
 
 task "release", "Release build":
   shell &"nim c -r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"

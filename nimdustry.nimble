@@ -6,5 +6,7 @@ srcDir        = "src"
 bin           = @["nimdustry"]
 
 requires "nim >= 1.4.2"
-requires "https://github.com/rlipsc/polymorph#2e88f88f2bc4ef29576073bbb750cc507e0be25b"
+requires "https://github.com/rlipsc/polymorph#58b95b623e812e570194ce3ed140308041576321"
+requires "https://github.com/treeform/staticglfw#d299a0d1727054749100a901d3b4f4fa92ed72f5"
 requires "nimPNG >= 0.3.1"
+requires "nimterop >= 0.6.13"
