@@ -1,7 +1,7 @@
 import common, polymorph, content, tables, math, random, strformat, world
 
 const 
-  zoom = 40.0
+  zoom = 38.0
   tileSizePx = 8
   shadowColor = rgba(0, 0, 0, 0.2)
   layerFloor = 0
