@@ -19,4 +19,5 @@ jobs:
       - uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: 'stable'
+      - run: cd fuse/ && nimble install -Y && cd ..
       - run: nimble build -Y
