@@ -26,8 +26,7 @@ iterator eachTile(): tuple[x, y: int, tile: Tile] =
 #TODO (re)move
 converter toFloat32(i: int): float32 {.inline.} = i.float32 
 
-var 
-  shadows = newFramebuffer()
+var shadows = newFramebuffer()
 
 generateWorld(32, 32)
 
