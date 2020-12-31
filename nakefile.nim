@@ -14,7 +14,6 @@ task "pack", "Pack textures":
   direshell &"fusepack -p:{getCurrentDir()}/assets-raw/sprites -o:{getCurrentDir()}/assets/atlas"
 
 task "debug", "Debug build":
-  runTask("pack")
   shell &"nim r -d:debug src/{app}"
 
 task "release", "Release build":

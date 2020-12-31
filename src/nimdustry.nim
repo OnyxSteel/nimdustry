@@ -8,6 +8,10 @@ const
   layerShadow = 10
   layerWall = 20
 
+#pack sprites on launch
+static:
+  echo staticExec("fusepack -p:../assets-raw/sprites -o:../assets/atlas")
+
 iterator eachTile(): tuple[x, y: int, tile: Tile] =
   let 
     xrange = (fuse.cam.w / 2).ceil.int + 1
