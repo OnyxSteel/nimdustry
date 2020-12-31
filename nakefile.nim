@@ -18,7 +18,7 @@ task "debug", "Debug build":
   shell &"nim r -d:nimTypeNames -d:debug {app}"
 
 task "release", "Release build":
-  shell &"nim c -r -d:release -d:danger -o:build/{app} {app}"
+  shell &"nim c -r -d:release -d:danger -d:noFont -o:build/{app} {app}"
 
 task "web", "Deploy web build":
   createDir "build/web"

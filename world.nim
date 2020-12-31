@@ -18,6 +18,8 @@ proc setWall*(x, y: int, b: Block) =
 
 proc toTile*(c: float32): int {.inline.} = (c + 0.5).int
 
+proc solid*(x, y: int): bool = tile(x, y).wall.solid
+
 #proc toTile*(c: Vec2): Vec2 {.inline.} = vec2(c.x + 0.5, c.y + 0.5)
 
 proc generateWorld*(width, height: int) =

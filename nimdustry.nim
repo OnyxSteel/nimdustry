@@ -2,11 +2,8 @@ import common, polymorph, content, tables, math, random, strformat, world
 
 const 
   zoom = 40.0
-  worldWidth = 32
-  worldHeight = 32
   tileSizePx = 8
   shadowColor = rgba(0, 0, 0, 0.2)
-  hitScan = 2
   layerFloor = 0
   layerShadow = 10
   layerWall = 20
@@ -26,6 +23,7 @@ iterator eachTile(): tuple[x, y: int, tile: Tile] =
       
       yield (wcx, wcy, tile(wcx, wcy))
 
+#TODO (re)move
 converter toFloat32(i: int): float32 {.inline.} = i.float32 
 
 var 
@@ -56,33 +54,12 @@ makeSystem("rotate", [Pos, Vel]):
     if len2(item.vel.x, item.vel.y) >= 0.01:
       item.vel.rot = item.vel.rot.aapproach(vec2(item.vel.x, item.vel.y).angle().radToDeg, 360.0 * fuse.delta)
 
-proc moveDelta(x, y, hitW, hitH, dx, dy: float32, isx: bool): Vec2 = 
-  let
-    hx = x - hitW/2
-    hy = y - hitH/2
-    tx = x.toTile
-    ty = y.toTile
-  
-  var hitbox = rect(hx + dx, hy + dy, hitW, hitH)
-  
-  for dx in -hitScan..hitScan:
-    for dy in -hitScan..hitScan:
-      let t = tile(dx + tx, dy + ty)
-      if t.wall.solid:
-        let tilehit = rect(dx + tx - 0.5, dy + ty - 0.5, 1, 1)
-        if hitbox.overlaps(tilehit):
-          let vec = hitbox.overlapDelta(tilehit)
-          hitbox.x += vec.x
-          hitbox.y += vec.y
-  
-  return vec2(hitbox.x - hx, hitbox.y - hy)
-
 makeSystem("moveSolid", [Pos, Vel, Solid]):
   all:
-    let deltax = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, item.vel.x, 0, true)
+    let deltax = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, item.vel.x, 0, true, 2, proc(x, y: int): bool = solid(x, y)) #TODO
     item.pos.x += deltax.x
     item.pos.y += deltax.y
-    let deltay = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, 0, item.vel.y, false)
+    let deltay = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, 0, item.vel.y, false, 2, proc(x, y: int): bool = solid(x, y))
     item.pos.x += deltay.x
     item.pos.y += deltay.y
 
@@ -133,6 +110,6 @@ makeEcs()
 commitSystems("run")
 
 discard newEntityWith(Main())
-discard newEntityWith(Input(), Pos(x: 20, y: 20), Vel(), Solid(size: 0.2), Draw())
+discard newEntityWith(Input(), Pos(x: 16, y: 16), Vel(), Solid(size: 0.5), Draw())
 
 initFuse(run, windowTitle = "Nimdustry")
