@@ -21,7 +21,7 @@ task "release", "Release build":
 
 task "web", "Deploy web build":
   createDir "build/web"
-  shell &"nim c -d:emscripten -d:danger {app}.nim"
+  shell &"nim c -d:emscripten -d:danger src/{app}.nim"
 
 task "profile", "Run with a profiler":
   shell nimExe, "c", "-r", "-d:release", "-d:danger", "--profiler:on", "--stacktrace:on", "-o:build/" & app, app
@@ -42,7 +42,7 @@ task "deploy", "Build for all platforms":
     direShell &"upx-ucl --best {bin}"
 
   createDir "build/web"
-  shell &"nim c -d:emscripten -d:danger {app}.nim"
+  shell &"nim c -d:emscripten -d:danger src/{app}.nim"
 
   cd "build"
 
