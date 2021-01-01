@@ -55,6 +55,6 @@ jobs:
           cp build/web/* .
           rm -rf build/ assets/ fuse/
           git add .
-          git commit -m --allow-empty "Updating pages"
+          git commit --allow-empty -m "Updating pages"
           git push https://Anuken:${{ secrets.API_TOKEN_GITHUB }}@github.com/Anuken/nimdustry
           
