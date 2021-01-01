@@ -17,8 +17,9 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 
 # Compiling
 
-1. Install Nim.
-2. `nimble build`
-3. `nake debug`
+1. Install the latest stable version of Nim.
+2. Install [a bunch of packages.](https://github.com/Anuken/nimdustry/blob/138851f4f74b35ca2e4f2132e08c8acc07d30de1/.github/workflows/build.yml#L38)
+3. `nimble build`
+4. `nake debug`
 
 Builds are only tested on Linux. Windows is unlikely to work at this time.
