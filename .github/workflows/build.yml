@@ -49,10 +49,10 @@ jobs:
           git config --global user.name "Github Actions"
           git clone --recursive https://github.com/Anuken/nimdustry.git
           cd nimdustry
-          nimble install nake -Y
+          nimble install https://github.com/Anuken/nake -Y
           nake web
           git checkout gh-pages
-          rm index*
+          rm -f index*
           cp build/web/* .
           rm -rf build/ assets/ fuse/
           git add .
