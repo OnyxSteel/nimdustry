@@ -1,4 +1,4 @@
-import content, simplex, common
+import content, fuse/[simplex, common]
 
 type Tile* = object
   floor*, wall*, overlay*: Block

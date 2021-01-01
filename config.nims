@@ -1,4 +1,4 @@
---path:"fuse"
+--path:"../"
 --hints:off
 
 when not defined(Android):

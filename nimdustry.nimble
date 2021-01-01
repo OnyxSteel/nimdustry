@@ -6,7 +6,7 @@ srcDir        = "src"
 bin           = @["nimdustry"]
 binDir        = "build"
 
-#TODO only depend on fuse
 requires "nim >= 1.4.2"
 requires "https://github.com/rlipsc/polymorph#58b95b623e812e570194ce3ed140308041576321"
+#depend on submodule
 requires "https://github.com/Anuken/fuse#" & staticExec("git -C fuse rev-parse HEAD")
