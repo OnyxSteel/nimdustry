@@ -51,10 +51,10 @@ jobs:
           cd nimdustry
           nake web
           git checkout gh-pages
-          rm -f index*
+          rm -rf index*
           cp build/web/* .
           rm -rf build/ assets/ fuse/
           git add .
-          git commit -m "Updating pages"
+          git commit -m --allow-empty "Updating pages"
           git push https://Anuken:${{ secrets.API_TOKEN_GITHUB }}@github.com/Anuken/nimdustry
           
