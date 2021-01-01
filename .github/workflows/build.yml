@@ -43,6 +43,7 @@ jobs:
         run: |
           git config --global user.email "cli@github.com"
           git config --global user.name "Github Actions"
+          nimble install nake -Y
           nake web
           git checkout gh-pages
           cp build/web/* .
