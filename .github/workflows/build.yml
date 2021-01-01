@@ -39,6 +39,10 @@ jobs:
       - name: Build Nimdustry
         run: |
           nimble build -Y
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+      - name: Verify Emscripten is installed
+        run: emcc -v
       - name: Build web version
         run: |
           git config --global user.email "cli@github.com"
@@ -46,6 +50,7 @@ jobs:
           nimble install nake -Y
           nake web
           git checkout gh-pages
+          rm index*
           cp build/web/* .
           rm -rf build/ assets/ fuse/
           git add .
