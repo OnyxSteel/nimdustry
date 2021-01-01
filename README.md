@@ -2,6 +2,8 @@
 
 A Nim version of Mindustry. Not intended to be a complete game. Partially made as a learning experience.
 
+[The Webassembly version can be seen here.](https://anuken.github.io/nimdustry/) Don't expect anything playable yet.
+
 ## Objectives
 
 - Experiment with ECS design, multithreading and various optimization techniques
@@ -15,4 +17,8 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 
 # Compiling
 
-Please don't. Dependencies are not set up yet.
+1. Install Nim.
+2. `nimble build`
+3. `nake debug`
+
+Builds are only tested on Linux. Windows is unlikely to work at this time.
