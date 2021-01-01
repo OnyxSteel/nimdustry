@@ -47,6 +47,8 @@ jobs:
         run: |
           git config --global user.email "cli@github.com"
           git config --global user.name "Github Actions"
+          git clone --recursive https://github.com/Anuken/nimdustry.git
+          cd nimdustry
           nimble install nake -Y
           nake web
           git checkout gh-pages
