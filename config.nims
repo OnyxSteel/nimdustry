@@ -1,7 +1,5 @@
---path:"../"
+--path:"fuse"
 --hints:off
-
-echo "why"
 
 when not defined(Android):
   --gc:arc

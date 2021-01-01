@@ -1,4 +1,4 @@
-import fuse/common, polymorph, content, tables, math, random, strformat, world
+import common, polymorph, content, tables, math, random, strformat, world
 
 const 
   zoom = 38.0
