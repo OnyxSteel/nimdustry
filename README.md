@@ -17,7 +17,7 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 
 # Compiling
 
-1. Install the latest stable version of Nim.
+1. Install the latest stable version of Nim and Nimble. `~/.nimble/bin` must be on your PATH.
 2. `sudo apt install -y xorg-dev libgl1-mesa-dev` or equivalent packages
 3. `nimble build`
 4. `nake debug`
