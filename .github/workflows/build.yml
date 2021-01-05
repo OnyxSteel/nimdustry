@@ -51,6 +51,7 @@ jobs:
           cd nimdustry
           nake web
           git checkout gh-pages
+          git pull
           rm -rf index*
           cp build/web/* .
           rm -rf build/ assets/ fuse/
