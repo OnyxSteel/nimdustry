@@ -34,7 +34,6 @@ jobs:
       
       - name: Install packages needed for GLFW
         run: |
-          sudo apt update
           sudo apt install -y xorg-dev libgl1-mesa-dev
       - name: Build Nimdustry
         run: |
