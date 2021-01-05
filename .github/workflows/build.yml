@@ -35,7 +35,7 @@ jobs:
       - name: Install packages needed for GLFW
         run: |
           sudo apt update
-          sudo apt install -y  build-essential libalut-dev libasound2-dev libc6-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxxf86vm-dev mesa-utils pkg-config xorg-dev xvfb
+          sudo apt install -y xorg-dev libgl1-mesa-dev
       - name: Build Nimdustry
         run: |
           nimble build -Y
@@ -51,10 +51,10 @@ jobs:
           cd nimdustry
           nake web
           git checkout gh-pages
-          rm -f index*
+          rm -rf index*
           cp build/web/* .
           rm -rf build/ assets/ fuse/
           git add .
-          git commit -m "Updating pages"
+          git commit --allow-empty -m "Updating pages"
           git push https://Anuken:${{ secrets.API_TOKEN_GITHUB }}@github.com/Anuken/nimdustry
           
