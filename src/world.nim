@@ -31,9 +31,14 @@ proc generateWorld*(width, height: int) =
   worldHeight = height
   tiles = newSeq[Tile](worldWidth * worldHeight)
 
-  for tile in tiles.mitems:
+  for index, tile in tiles.mpairs:
     tile.floor = blockGrass
     tile.overlay = blockAir
     tile.wall = blockAir
 
-    if rand(20) <= 1: tile.overlay = blockTungsten
+    let 
+      x = index mod width
+      y = index div width
+      scl = 22
+
+    if noise(x / scl, y / scl) > 0.72: tile.overlay = blockTungsten

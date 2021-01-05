@@ -64,7 +64,8 @@ makeSystem("main", [Main]):
 
   init:
     fuse.pixelScl = 1.0 / tileSizePx
-    var m = newScreenMesh()
+    #TODO move
+    loadContent()
 
   start:
     if keyEscape.tapped: quitApp()
@@ -94,7 +95,7 @@ makeSystem("main", [Main]):
 
 makeSystem("draw", [Draw, Pos, Vel]):
   all:
-    draw("dagger", item.pos.x, item.pos.y, layerWall + 1, rotation = item.vel.rot - 90)
+    draw("dagger".patch, item.pos.x, item.pos.y, layerWall + 1, rotation = item.vel.rot - 90)
 
 makeEcs()
 commitSystems("run")

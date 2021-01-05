@@ -97,25 +97,39 @@ proc clearSprite(mesh: Mesh, idx: int) =
   zeroMem(addr mesh.vertices[idx], spriteSize * 4)
   mesh.updateVertices(idx..<(idx+spriteSize))
 
+{.push checks: off.}
+
+proc randHash(value: int): int {.inline.} =
+  var x = value.uint64
+  x = x xor (x shr 33)
+  x *= 0xff51afd7ed558ccd'u64
+  x = x xor (x shr 33)
+  x *= 0xc4ceb9fe1a85ec53'u64
+  x = x xor (x shr 33)
+  return x.int.abs
+
+{.pop.}
+
 #TODO inline maybe
 proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
   #TODO very bad and inefficient. blocks should have regions stored...
   let 
-    floor = tile.floor.name.Patch
-    over = tile.overlay.name.Patch
-    wall = tile.wall.name.Patch
-    shadow = "wallshadow".Patch
-    
-  sprite(mesh, floor, index, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+    floor = tile.floor
+    over = tile.overlay
+    wall = tile.wall
+    r = randHash(x + y * worldWidth)
+  
+  if floor.patches.len != 0:
+    sprite(mesh, floor.patches[r mod floor.patches.len], index, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
 
-  if tile.overlay != blockAir:
-    sprite(mesh, over, index + layerSize * clOverlay.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+  if over.patches.len != 0:
+    sprite(mesh, over.patches[r mod over.patches.len], index + layerSize * clOverlay.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
   else:
     clearSprite(mesh, index + layerSize * clOverlay.int)
   
-  if tile.wall != blockAir:
-    sprite(mesh, wall, index + layerSize * clWall.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
-    sprite(mesh, shadow, index + layerSize * clWallShadow.int, x.float32 - 0.5'f32 - 1.px, y.float32 - 0.5'f32 - 1.px, 1.0 + 2.px, 1.0 + 2.px)
+  if wall.patches.len != 0:
+    sprite(mesh, wall.patches[r mod wall.patches.len], index + layerSize * clWall.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+    sprite(mesh, "wallshadow".patch, index + layerSize * clWallShadow.int, x.float32 - 0.5'f32 - 1.px, y.float32 - 0.5'f32 - 1.px, 1.0 + 2.px, 1.0 + 2.px)
   else:
     clearSprite(mesh, index + layerSize * clWall.int)
     clearSprite(mesh, index + layerSize * clWallShadow.int)
