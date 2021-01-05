@@ -53,4 +53,5 @@ initContent:
   ice = Block()
   iceWall = Block(solid: true)
   stoneWall = Block(solid: true)
+  tungsten = Block()
   dagger = Unit()

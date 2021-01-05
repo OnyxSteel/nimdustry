@@ -1,4 +1,4 @@
-import common, polymorph, content, tables, math, random, strformat, world
+import common, polymorph, content, tables, math, random, strformat, world, render
 
 const 
   zoom = 38.0
@@ -12,27 +12,12 @@ const
 static:
   echo staticExec("fusepack -p:../assets-raw/sprites -o:../assets/atlas")
 
-iterator eachTile(): tuple[x, y: int, tile: Tile] =
-  let 
-    xrange = (fuse.cam.w / 2).ceil.int + 1
-    yrange = (fuse.cam.h / 2).ceil.int + 1
-    camx = fuse.cam.pos.x.ceil.int
-    camy = fuse.cam.pos.y.ceil.int
-
-  for cx in -xrange..xrange:
-    for cy in -yrange..yrange:
-      let 
-        wcx = camx + cx
-        wcy = camy + cy
-      
-      yield (wcx, wcy, tile(wcx, wcy))
-
 #TODO (re)move
 converter toFloat32(i: int): float32 {.inline.} = i.float32 
 
 var shadows = newFramebuffer()
 
-generateWorld(32, 32)
+generateWorld(128, 128)
 
 registerComponents(defaultComponentOptions):
   type
@@ -45,10 +30,12 @@ registerComponents(defaultComponentOptions):
     Input* = object
     Draw* = object
     Main* = object
+    Direction = object
+      dir: range[0..3]
 
 makeSystem("controlled", [Input, Pos, Vel]):
   all:
-    let v = vec2(axis(keyA, keyD), axis(KeyCode.keyS, keyW)).lim(1) * 15 * fuse.delta
+    let v = vec2(axis(keyA, keyD), axis(KeyCode.keyS, keyW)).lim(1) * 10 * fuse.delta
     item.vel.x += v.x
     item.vel.y += v.y
 
@@ -77,6 +64,7 @@ makeSystem("main", [Main]):
 
   init:
     fuse.pixelScl = 1.0 / tileSizePx
+    var m = newScreenMesh()
 
   start:
     if keyEscape.tapped: quitApp()
@@ -91,19 +79,18 @@ makeSystem("main", [Main]):
         ty = mouseWorld().y.toTile
       
       setWall(tx, ty, if keyMouseRight.down: blockAir else: blockStoneWall)
+      tileChanged(tx, ty)
 
-    drawLayer(layerShadow, proc() = shadows.start(colorClear), proc() =
+    draw(layerFloor, proc() = 
+      drawFloor()
+
+      shadows.start(colorClear)
+      drawShadows()
       shadows.stop()
       shadows.blit(color = shadowColor)
+
+      drawWalls()
     )
-
-    for x, y, t in eachTile():
-      draw(t.floor.name, x, y, layerFloor)
-      if t.wall.id != 0:
-        draw("wallshadow", x, y, layerShadow)
-
-        let reg: Patch = t.wall.name
-        draw(reg, x, y, layerWall)
 
 makeSystem("draw", [Draw, Pos, Vel]):
   all:
@@ -113,6 +100,6 @@ makeEcs()
 commitSystems("run")
 
 discard newEntityWith(Main())
-discard newEntityWith(Input(), Pos(x: 16, y: 16), Vel(), Solid(size: 0.5), Draw())
+discard newEntityWith(Input(), Pos(x: worldWidth/2, y: worldHeight/2), Vel(), Solid(size: 0.5), Draw())
 
 initFuse(run, windowTitle = "Nimdustry")
