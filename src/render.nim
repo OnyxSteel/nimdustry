@@ -1,4 +1,4 @@
-import common, content, world, math
+import common, content, math, polymorph, nimdustry
 
 const 
   chunkSize = 40
@@ -79,45 +79,28 @@ proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: flo
     verts = addr mesh.vertices
 
   verts.minsert(idx, [x1, y1, u, v, x2, y2, u, v2, x3, y3, u2, v2, x4, y4, u2, v])
+  mesh.updateVertices(idx..<(idx+spriteSize))
 
 proc sprite(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32) =
   let
     x2 = width + x
     y2 = height + y
-    u = region.u
-    v = region.v2
-    u2 = region.u2
-    v2 = region.v
     verts = addr mesh.vertices
 
-  verts.minsert(idx, [x, y, u, v, x, y2, u, v2, x2, y2, u2, v2, x2, y, u2, v])
+  verts.minsert(idx, [x, y, region.u, region.v2, x, y2, region.u, region.v, x2, y2, region.u2, region.v, x2, y, region.u2, region.v2])
   mesh.updateVertices(idx..<(idx+spriteSize))
 
 proc clearSprite(mesh: Mesh, idx: int) =
   zeroMem(addr mesh.vertices[idx], spriteSize * 4)
   mesh.updateVertices(idx..<(idx+spriteSize))
 
-{.push checks: off.}
-
-proc randHash(value: int): int {.inline.} =
-  var x = value.uint64
-  x = x xor (x shr 33)
-  x *= 0xff51afd7ed558ccd'u64
-  x = x xor (x shr 33)
-  x *= 0xc4ceb9fe1a85ec53'u64
-  x = x xor (x shr 33)
-  return x.int.abs
-
-{.pop.}
-
 #TODO inline maybe
 proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
-  #TODO very bad and inefficient. blocks should have regions stored...
   let 
     floor = tile.floor
     over = tile.overlay
     wall = tile.wall
-    r = randHash(x + y * worldWidth)
+    r = hashInt(x + y * worldWidth)
   
   if floor.patches.len != 0:
     sprite(mesh, floor.patches[r mod floor.patches.len], index, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
@@ -126,6 +109,7 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
     sprite(mesh, over.patches[r mod over.patches.len], index + layerSize * clOverlay.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
   else:
     clearSprite(mesh, index + layerSize * clOverlay.int)
+  
   
   if wall.patches.len != 0:
     sprite(mesh, wall.patches[r mod wall.patches.len], index + layerSize * clWall.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
@@ -136,14 +120,19 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
   
 proc tileChanged*(x, y: int) =
   if inWorld(x, y):
-    let mesh = getMesh(x div chunkSize, y div chunkSize)
+    let 
+      mesh = getMesh(x div chunkSize, y div chunkSize)
+      t = tile(x, y)
+
+    if t.build != NoEntityRef: discard
+      #t.build.deleted
+
     if not mesh.isNil:
       let 
         cx = x mod chunkSize
         cy = y mod chunkSize
       
-      updateSprite(mesh, tile(x, y), x, y, (cx + cy*chunkSize) * spriteSize)
-
+      updateSprite(mesh, t, x, y, (cx + cy*chunkSize) * spriteSize)
 
 proc cacheChunk(cx, cy: int) =
   let

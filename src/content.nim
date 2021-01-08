@@ -6,6 +6,7 @@ type Content* = ref object of RootObj
 
 type Block* = ref object of Content
   solid*: bool
+  building*: bool
   patches*: seq[Patch]
 
 type Item* = ref object of Content
@@ -61,6 +62,7 @@ initContent:
   iceWall = Block(solid: true)
   stoneWall = Block(solid: true)
   tungsten = Block()
+  conveyor = Block(building: true)
 
   dagger = Unit()
 
