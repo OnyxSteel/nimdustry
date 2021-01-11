@@ -1,4 +1,4 @@
-import common, content, math, polymorph, nimdustry
+import fusecore, content, math, common
 
 const 
   chunkSize = 40
@@ -118,7 +118,7 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
     clearSprite(mesh, index + layerSize * clWall.int)
     clearSprite(mesh, index + layerSize * clWallShadow.int)
   
-proc tileChanged*(x, y: int) =
+proc updateMesh*(x, y: int) =
   if inWorld(x, y):
     let 
       mesh = getMesh(x div chunkSize, y div chunkSize)
