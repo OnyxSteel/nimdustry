@@ -1,22 +1,28 @@
-import macros, strutils, tables, sequtils
+import macros, strutils
 
 #TODO remove this module..?
 
 #macro that creates definition for a list of objects.
-macro initContent*(body: untyped): untyped =
+macro makeContent*(body: untyped): untyped =
   result = newStmtList()
   
   var 
-    letSec = newNimNode(nnkLetSection)
+    letSec = newNimNode(nnkVarSection)
     id = 0
-  
+    initProc = quote do:
+      template initContent*() =
+        discard
+    initBody = initProc[6]
+
   result.add letSec
+  result.add initProc
 
   for n in body:
     if n.kind == nnkAsgn:
       var 
         nameIdent = $n[0] #name of content
         consn = n[1] #object constructor call
+        typet = consn[0]
         typeName = $consn[0] #e.g. "Block"
       
       #switch empty calls to constructors
@@ -30,24 +36,11 @@ macro initContent*(body: untyped): untyped =
       #e.g. Block + ice = blockIce
       let resName = typeName.toLowerAscii & nameIdent.capitalizeAscii
       #declare the var
-      letSec.add newIdentDefs(postfix(ident(resName), "*"), newEmptyNode(), consn)
+      letSec.add newIdentDefs(postfix(ident(resName), "*"), typet, newEmptyNode())
+      #construct var
+      initBody.add(newAssignment(ident(resName), consn))
       #add to list
-      result.add newCall(newDotExpr(ident("contentList"), ident("add")), ident(resName))
+      initBody.add newCall(newDotExpr(ident("contentList"), ident("add")), ident(resName))
       #add to other list
-      result.add newCall(newDotExpr(ident(typeName.toLowerAscii & "List"), ident("add")), ident(resName))
+      initBody.add newCall(newDotExpr(ident(typeName.toLowerAscii & "List"), ident("add")), ident(resName))
       inc id
-
-import common
-
-proc loadContent*() =
-  for b in blockList:
-    var maxFound = 0
-    for i in 1..10:
-      if not fuse.atlas.patches.hasKey(b.name & $i): break
-      maxFound = i
-    
-    if maxFound == 0:
-      if fuse.atlas.patches.hasKey(b.name):
-        b.patches = @[b.name.patch]
-    else:
-      b.patches = (1..maxFound).toSeq().mapIt((b.name & $it).patch)

@@ -1,4 +1,4 @@
-import content, tables, math, random, common
+import tables, math, random, common, sequtils, world, render
 
 #general design:
 #- all global types/state stored in common
@@ -36,30 +36,57 @@ sys("followCam", [Pos, Input]):
   all:
     fuse.cam.pos = vec2(item.pos.x, item.pos.y)
 
-sys("main", [Main]):
+sys("draw", [Main]):
+  vars:
+    shadows: Framebuffer
+    dir: int
   
   init:
-    generateWorld(128, 128)
+    #load all content
+    initContent()
 
+    #TODO move initialization out of draw system, it's not relevant
+    generateWorld(128, 128)
     discard newEntityWith(Input(), Pos(x: worldWidth/2, y: worldHeight/2), Vel(), Solid(size: 0.5), Draw())
 
+    sys.shadows = newFramebuffer()
     fuse.pixelScl = 1.0 / tileSizePx
-    #TODO move
-    loadContent()
+    
+    #load all block textures before rendering
+    for b in blockList:
+      var maxFound = 0
+      for i in 1..10:
+        if not fuse.atlas.patches.hasKey(b.name & $i): break
+        maxFound = i
+      
+      if maxFound == 0:
+        if fuse.atlas.patches.hasKey(b.name):
+          b.patches = @[b.name.patch]
+      else:
+        b.patches = (1..maxFound).toSeq().mapIt((b.name & $it).patch)
 
   start:
     if keyEscape.tapped: quitApp()
 
     fuse.cam.resize(fuse.widthf / zoom, fuse.heightf / zoom)
     fuse.cam.use()
+
+    let shadows = sys.shadows
     shadows.resize(fuse.width, fuse.height)
+    if fuse.scrollY != 0:
+      sys.dir += sign(fuse.scrollY).int
+      sys.dir = sys.dir.emod(4)
 
     if keyMouseLeft.down or keyMouseRight.down:
       let
         tx = mouseWorld().x.toTile
         ty = mouseWorld().y.toTile
 
-      setWall(tx, ty, if keyMouseRight.down: blockAir else: blockStoneWall)
+      setWall(tx, ty, if keyMouseRight.down: blockAir else: blockConveyor)
+      let t = tile(tx, ty)
+      if t.wall == blockConveyor:
+        var dir = t.build.fetchComponent Dir
+        dir.val = sys.dir
 
     draw(layerFloor, proc() =
       drawFloor()
@@ -71,31 +98,33 @@ sys("main", [Main]):
       drawWalls()
     )
 
-sys("draw", [Draw, Pos, Vel]):
+sys("drawDagger", [Draw, Pos, Vel]):
   all:
-    draw("dagger".patch, item.pos.x, item.pos.y, layerWall + 1, rotation = item.vel.rot - 90)
+    draw("dagger".patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90)
 
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
-    draw("conveyor".patch, item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90)
+    draw(patch("conveyor-0-" & $((fuse.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90)
 
-onEvent(WallChange): 
+onWallChange: 
   updateMesh(event.x, event.y)
 
   let t = tile(event.x, event.y)
 
   if t.build != NoEntityRef:
     t.build.delete()
+    setBuild(event.x, event.y, NoEntityRef)
   
-  if t.wall.building:
-    discard
+  if not t.wall.building.isNil:
+    let build = t.wall.building()
+    build.addComponent Building(x: event.x, y: event.y)
+    build.addComponent Pos(x: event.x.float32, y: event.y.float32)
+    setBuild(event.x, event.y, build)
 
+onFloorChange: updateMesh(event.x, event.y)
+onOverlayChange: updateMesh(event.x, event.y)
 
-onEvent(FloorChange): updateMesh(event.x, event.y)
-onEvent(OverlayChange): updateMesh(event.x, event.y)
-
-onEvent(WorldCreate):
+onWorldCreate:
   echo "World created: " & $worldWidth & " x " & $worldHeight
 
-launchFuse("Nimdustry"):
-  include content, world, render
+launchFuse("Nimdustry")

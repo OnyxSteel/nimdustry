@@ -1,4 +1,4 @@
-import content, polymorph, simplex, common
+import polymorph, simplex, common
 
 #TODO move?
 proc inWorld*(x, y: int): bool {.inline.} = x < worldWidth and y < worldHeight and x >= 0 and y >= 0
@@ -9,7 +9,11 @@ proc tile*(x, y: int): Tile =
 proc setWall*(x, y: int, b: Block) =
   if inWorld(x, y): 
     tiles[x + y*worldWidth].wall = b
-    fireEvent(WallChange(x: x, y: y))
+    fire(WallChange(x: x, y: y))
+
+proc setBuild*(x, y: int, b: EntityRef) =
+  if inWorld(x, y): 
+    tiles[x + y*worldWidth].build = b
 
 proc toTile*(c: float32): int {.inline.} = (c + 0.5).int
 
@@ -33,4 +37,4 @@ proc generateWorld*(width, height: int) =
 
     if noise(x / scl, y / scl) > 0.72: tile.overlay = blockTungsten
   
-  fireEvent(WorldCreate())
+  fire(WorldCreate())

@@ -1,21 +1,23 @@
-import polymorph, content, fusecore, ecs
+import polymorph, content, fusecore, ecs, tables, sugar
 export ecs
+
+#contains all global types and variables
+#should not contain any logic
 
 exportAll:
   
   type
-
     Tile = object
       floor, wall, overlay: Block
       build: EntityRef
 
-    Content* = ref object of RootObj
-      name*: string
-      id*: uint32
-    Block* = ref object of Content
-      solid*: bool
-      building*: bool
-      patches*: seq[Patch]
+    Content = ref object of RootObj
+      name: string
+      id: uint32
+    Block = ref object of Content
+      solid: bool
+      building: proc(): EntityRef
+      patches: seq[Patch]
     Item* = ref object of Content
     Unit* = ref object of Content
 
@@ -41,16 +43,10 @@ exportAll:
 
       Conveyor = object
 
-      #events
-
-      WorldCreate = object
-
-      WallChange = object
-        x, y: int
-      FloorChange = object
-        x, y: int
-      OverlayChange = object
-        x, y: int
+  event(WorldCreate)
+  event(WallChange, x = int, y = int)
+  event(FloorChange, x = int, y = int)
+  event(OverlayChange, x = int, y = int)
 
   const
     zoom = 38.0
@@ -60,8 +56,7 @@ exportAll:
     layerShadow = 10'f32
     layerWall = 20'f32
 
-  var   
-    shadows = newFramebuffer()
+  var
     worldWidth = 32
     worldHeight = 32
     tiles: seq[Tile]
@@ -73,14 +68,14 @@ exportAll:
     itemList: seq[Item]
     unitList: seq[Unit]
 
-initContent:
+makeContent:
   air = Block()
   grass = Block()
   ice = Block()
   iceWall = Block(solid: true)
   stoneWall = Block(solid: true)
   tungsten = Block()
-  conveyor = Block(building: true)
+  conveyor = Block(building: () => newEntityWith(Conveyor(), Dir()))
 
   dagger = Unit()
 
