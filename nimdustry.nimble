@@ -7,7 +7,7 @@ bin           = @["nimdustry"]
 binDir        = "build"
 
 requires "nim >= 1.4.2"
-requires "https://github.com/rlipsc/polymorph#551eafab0738f61701b09384159d174e88a1a0e7"
+requires "https://github.com/rlipsc/polymorph#0241b43d60ae37aea881f4a0a550705741b28dc0"
 requires "https://github.com/Anuken/nake#master"
 #depend on submodule
 requires "https://github.com/Anuken/fuse#" & staticExec("git -C fuse rev-parse HEAD")
