@@ -17,21 +17,6 @@ jobs:
       - uses: jiro4989/setup-nim-action@v1
         with:
           nim-version: 'stable'
-      
-      - name: Cache choosenim
-        id: cache-choosenim
-        uses: actions/cache@v1
-        with:
-          path: ~/.choosenim
-          key: ${{ runner.os }}-choosenim-stable
-
-      - name: Cache nimble
-        id: cache-nimble
-        uses: actions/cache@v1
-        with:
-          path: ~/.nimble
-          key: ${{ runner.os }}-nimble-stable
-      
       - name: Install packages needed for GLFW
         run: |
           sudo apt install -y xorg-dev libgl1-mesa-dev
