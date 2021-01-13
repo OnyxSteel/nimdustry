@@ -120,7 +120,6 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
   else:
     clearSprite(mesh, index + layerSize * clWall.int)
     
-  
 proc updateMesh*(x, y: int) =
   if inWorld(x, y):
     let 
@@ -206,3 +205,7 @@ proc drawShadows*() =
 
 proc drawWalls*() =
   drawChunks(clWall, clWall)
+
+onWallChange: updateMesh(event.x, event.y)
+onFloorChange: updateMesh(event.x, event.y)
+onOverlayChange: updateMesh(event.x, event.y)

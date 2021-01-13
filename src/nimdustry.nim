@@ -1,4 +1,4 @@
-import tables, math, random, common, sequtils, world, render
+import tables, math, random, common, sequtils, world, render, quadtree
 
 #general design:
 #- all global types/state stored in common
@@ -31,6 +31,18 @@ sys("moveSolid", [Pos, Vel, Solid]):
 
     item.vel.x = 0
     item.vel.y = 0
+
+#TODO remove
+sys("testQuadtree", [Pos]):
+  vars:
+    tree: Quadtree[Rect]
+    ints: seq[int]
+  init:
+    sys.tree = newQuadtree[Rect](rect(0, 0, 128, 128))
+  start:
+    sys.tree.clear()
+  all:
+    sys.tree.insert(rect(item.pos.x - 0.5, item.pos.y - 0.5, 1, 1))
 
 sys("followCam", [Pos, Input]):
   all:
@@ -98,6 +110,20 @@ sys("draw", [Main]):
       drawWalls()
     )
 
+#TODO remove
+sys("drawQuadtree", [Main]):
+  start:
+    proc draw(q: Quadtree) =
+      lineRect(q.bounds.x, q.bounds.y, q.bounds.w, q.bounds.h, color = rgb(1, 0, 0), stroke = 0.1, z = layerWall + 2)
+
+      for i in q.items:
+        lineRect(i.x, i.y, i.w, i.h, color = rgb(0, 0, 1), stroke = 0.1, z = layerWall + 2)
+      
+      for tree in q.children:
+        draw(tree)
+
+    draw(sysTestQuadtree.tree)
+
 sys("drawDagger", [Draw, Pos, Vel]):
   all:
     draw("dagger".patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90)
@@ -105,24 +131,6 @@ sys("drawDagger", [Draw, Pos, Vel]):
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
     draw(patch("conveyor-0-" & $((fuse.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90)
-
-onWallChange: 
-  updateMesh(event.x, event.y)
-
-  let t = tile(event.x, event.y)
-
-  if t.build != NoEntityRef:
-    t.build.delete()
-    setBuild(event.x, event.y, NoEntityRef)
-  
-  if not t.wall.building.isNil:
-    let build = t.wall.building()
-    build.addComponent Building(x: event.x, y: event.y)
-    build.addComponent Pos(x: event.x.float32, y: event.y.float32)
-    setBuild(event.x, event.y, build)
-
-onFloorChange: updateMesh(event.x, event.y)
-onOverlayChange: updateMesh(event.x, event.y)
 
 onWorldCreate:
   echo "World created: " & $worldWidth & " x " & $worldHeight

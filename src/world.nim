@@ -38,3 +38,17 @@ proc generateWorld*(width, height: int) =
     if noise(x / scl, y / scl) > 0.72: tile.overlay = blockTungsten
   
   fire(WorldCreate())
+
+#update wall entities when walls change
+onWallChange: 
+  let t = tile(event.x, event.y)
+
+  if t.build != NoEntityRef:
+    t.build.delete()
+    setBuild(event.x, event.y, NoEntityRef)
+  
+  if not t.wall.building.isNil:
+    let build = t.wall.building()
+    build.addComponent Building(x: event.x, y: event.y)
+    build.addComponent Pos(x: event.x.float32, y: event.y.float32)
+    setBuild(event.x, event.y, build)
