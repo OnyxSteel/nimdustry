@@ -1,4 +1,4 @@
-import nake, os, strformat, strutils, sequtils, json
+import nake, os, strformat, strutils, sequtils
 const
   app = "nimdustry"
 
@@ -17,11 +17,12 @@ task "debug", "Debug build":
   shell &"nim r -d:debug src/{app}"
 
 task "release", "Release build":
-  shell &"nim r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"
+  direshell &"nim r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"
 
 task "web", "Deploy web build":
   createDir "build/web"
-  shell &"nim c -d:emscripten -d:danger src/{app}.nim"
+  direshell &"nim c -d:emscripten -d:danger src/{app}.nim"
+  writeFile("build/web/index.html", readFile("build/web/index.html").replace("$title$", capitalizeAscii(app)))
 
 task "profile", "Run with a profiler":
   shell nimExe, "c", "-r", "-d:release", "-d:danger", "--profiler:on", "--stacktrace:on", "-o:build/" & app, app
@@ -41,8 +42,7 @@ task "deploy", "Build for all platforms":
     direShell &"strip -s {bin}"
     direShell &"upx-ucl --best {bin}"
 
-  createDir "build/web"
-  shell &"nim c -d:emscripten -d:danger src/{app}.nim"
+  runTask("web")
 
   cd "build"
 

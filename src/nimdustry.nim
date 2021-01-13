@@ -1,13 +1,7 @@
-import tables, math, random, common, sequtils, world, render, quadtree
-
-#general design:
-#- all global types/state stored in common
-#- all systems are stored in separate files
-#
+import tables, math, random, common, sequtils, world, render
 
 #pack sprites on launch
-static:
-  echo staticExec("fusepack -p:../assets-raw/sprites -o:../assets/atlas")
+static: echo staticExec("fusepack -p:../assets-raw/sprites -o:../assets/atlas")
 
 sys("controlled", [Input, Pos, Vel]):
   all:
@@ -31,18 +25,6 @@ sys("moveSolid", [Pos, Vel, Solid]):
 
     item.vel.x = 0
     item.vel.y = 0
-
-#TODO remove
-sys("testQuadtree", [Pos]):
-  vars:
-    tree: Quadtree[Rect]
-    ints: seq[int]
-  init:
-    sys.tree = newQuadtree[Rect](rect(0, 0, 128, 128))
-  start:
-    sys.tree.clear()
-  all:
-    sys.tree.insert(rect(item.pos.x - 0.5, item.pos.y - 0.5, 1, 1))
 
 sys("followCam", [Pos, Input]):
   all:
@@ -109,20 +91,6 @@ sys("draw", [Main]):
 
       drawWalls()
     )
-
-#TODO remove
-sys("drawQuadtree", [Main]):
-  start:
-    proc draw(q: Quadtree) =
-      lineRect(q.bounds.x, q.bounds.y, q.bounds.w, q.bounds.h, color = rgb(1, 0, 0), stroke = 0.1, z = layerWall + 2)
-
-      for i in q.items:
-        lineRect(i.x, i.y, i.w, i.h, color = rgb(0, 0, 1), stroke = 0.1, z = layerWall + 2)
-      
-      for tree in q.children:
-        draw(tree)
-
-    draw(sysTestQuadtree.tree)
 
 sys("drawDagger", [Draw, Pos, Vel]):
   all:
