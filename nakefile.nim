@@ -35,10 +35,10 @@ task "deploy", "Build for all platforms":
       exeExt = if os == "windows": ".exe" else: ""
       bin = dir / exeName & exeExt
       #win32 crashes when the release/danger flag is specified
-      dangerous = if name == "win32": "" else: "-d:danger"
+      dangerous = if name == "win32": "--opt:size" else: "-d:danger"
 
     createDir dir
-    direShell &"nim --cpu:{cpu} --os:{os} --app:gui {args} {dangerous} -o:{bin} c {app}"
+    direShell &"nim --cpu:{cpu} --os:{os} --app:gui {args} {dangerous} -o:{bin} c src/{app}"
     direShell &"strip -s {bin}"
     direShell &"upx-ucl --best {bin}"
 
