@@ -16,12 +16,9 @@ sys("rotate", [Pos, Vel]):
 
 sys("moveSolid", [Pos, Vel, Solid]):
   all:
-    let deltax = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, item.vel.x, 0, true, 2, proc(x, y: int): bool = solid(x, y)) #TODO
-    item.pos.x += deltax.x
-    item.pos.y += deltax.y
-    let deltay = moveDelta(item.pos.x, item.pos.y, item.solid.size, item.solid.size, 0, item.vel.y, false, 2, proc(x, y: int): bool = solid(x, y))
-    item.pos.x += deltay.x
-    item.pos.y += deltay.y
+    let delta = moveDelta(rectCenter(item.pos.x, item.pos.y, item.solid.size), item.vel.x, item.vel.y, proc(x, y: int): bool = solid(x, y))
+    item.pos.x += delta.x
+    item.pos.y += delta.y
 
     item.vel.x = 0
     item.vel.y = 0
@@ -76,7 +73,7 @@ sys("draw", [Main]):
         tx = mouseWorld().x.toTile
         ty = mouseWorld().y.toTile
 
-      setWall(tx, ty, if keyMouseRight.down: blockAir else: blockConveyor)
+      setWall(tx, ty, if keyMouseRight.down: blockAir else: blockStoneWall)
       let t = tile(tx, ty)
       if t.wall == blockConveyor:
         var dir = t.build.fetchComponent Dir
