@@ -1,4 +1,4 @@
-import polymorph, content, fusecore, ecs, tables, sugar
+import polymorph, content, fcore, ecs, tables, sugar
 export ecs
 
 #contains all global types and variables

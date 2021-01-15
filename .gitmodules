@@ -1,4 +1,4 @@
-[submodule "fuse"]
-	path = fuse
-	url = https://github.com/Anuken/fuse.git
+[submodule "fau"]
+	path = fau
+	url = https://github.com/Anuken/fau.git
 	branch = master

@@ -175,19 +175,19 @@ proc drawChunks(layerFrom, layerTo: ChunkLayer) =
   #flush any remaining things in the batch
   drawFlush()
   #bind main texture
-  fuse.atlas.texture.use()
+  fau.atlas.texture.use()
   
   if chunks.len == 0:
     initChunks()
 
   chunkShader.use()
-  chunkShader.setmat4("u_proj", fuse.cam.mat)
+  chunkShader.setmat4("u_proj", fau.cam.mat)
 
   let 
-    minx = ((fuse.cam.pos.x - fuse.cam.w/2) / chunkSize).floor.int
-    miny = ((fuse.cam.pos.y - fuse.cam.h/2) / chunkSize).floor.int
-    maxx = ((fuse.cam.pos.x + fuse.cam.w/2) / chunkSize).ceil.int
-    maxy = ((fuse.cam.pos.y + fuse.cam.h/2) / chunkSize).ceil.int
+    minx = ((fau.cam.pos.x - fau.cam.w/2) / chunkSize).floor.int
+    miny = ((fau.cam.pos.y - fau.cam.h/2) / chunkSize).floor.int
+    maxx = ((fau.cam.pos.x + fau.cam.w/2) / chunkSize).ceil.int
+    maxy = ((fau.cam.pos.y + fau.cam.h/2) / chunkSize).ceil.int
   
   for cx in minx..maxx:
     for cy in miny..maxy:

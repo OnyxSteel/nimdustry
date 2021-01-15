@@ -11,7 +11,7 @@ const
   ]
 
 task "pack", "Pack textures":
-  direshell &"fusepack -p:{getCurrentDir()}/assets-raw/sprites -o:{getCurrentDir()}/assets/atlas"
+  direshell &"faupack -p:{getCurrentDir()}/assets-raw/sprites -o:{getCurrentDir()}/assets/atlas"
 
 task "debug", "Debug build":
   shell &"nim r -d:debug src/{app}"

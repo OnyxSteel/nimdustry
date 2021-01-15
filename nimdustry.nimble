@@ -10,4 +10,4 @@ requires "nim >= 1.4.2"
 requires "https://github.com/rlipsc/polymorph#0241b43d60ae37aea881f4a0a550705741b28dc0"
 requires "https://github.com/Anuken/nake#master"
 #depend on submodule
-requires "https://github.com/Anuken/fuse#" & staticExec("git -C fuse rev-parse HEAD")
+requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEAD")
