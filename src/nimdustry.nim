@@ -3,7 +3,16 @@ import tables, math, random, common, sequtils, world, render
 #pack sprites on launch
 static: echo staticExec("faupack -p:../assets-raw/sprites -o:../assets/atlas")
 
-sys("controlled", [Input, Pos, Vel]):
+sys("init", [Main]):
+  init:
+    initContent()
+    generateWorld(128, 128)
+
+    makeUnit(unitDagger, worldWidth/2, worldHeight/2).addComponent Input()
+    discard makeUnit(unitCrawler, worldWidth/2 - 4, worldHeight/2 - 2)
+    fau.pixelScl = 1.0 / tileSizePx
+
+sys("control", [Input, Pos, Vel]):
   all:
     let v = vec2(axis(keyA, keyD).float32, axis(KeyCode.keyS, keyW).float32).lim(1) * 10 * fau.delta
     item.vel.x += v.x
@@ -33,15 +42,7 @@ sys("draw", [Main]):
     dir: int
   
   init:
-    #load all content
-    initContent()
-
-    #TODO move initialization out of draw system, it's not relevant
-    generateWorld(128, 128)
-    discard newEntityWith(Input(), Pos(x: worldWidth/2, y: worldHeight/2), Vel(), Solid(size: 0.5), Draw())
-
     sys.shadows = newFramebuffer()
-    fau.pixelScl = 1.0 / tileSizePx
     
     #load all block textures before rendering
     for b in blockList:
@@ -89,9 +90,9 @@ sys("draw", [Main]):
       drawWalls()
     )
 
-sys("drawDagger", [Draw, Pos, Vel]):
+sys("drawUnits", [DrawUnit, Pos, Vel]):
   all:
-    draw("dagger".patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90)
+    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90)
 
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:

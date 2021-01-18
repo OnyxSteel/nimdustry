@@ -40,9 +40,6 @@ proc initChunks*() =
     }
     """
     )
-
-  for chunk in chunks:
-    if not chunk.isNil: chunk.dispose()
   
   chunksX = (worldWidth / chunkSize).ceil.int
   chunksY = (worldHeight / chunkSize).ceil.int

@@ -10,6 +10,7 @@ exportAll:
     Tile = object
       floor, wall, overlay: Block
       build: EntityRef
+    Team = distinct uint8
 
     Content = ref object of RootObj
       name: string
@@ -20,7 +21,9 @@ exportAll:
       patches: seq[Patch]
     Item* = ref object of Content
     Unit* = ref object of Content
-
+      health: float32
+      size: float32
+      
   registerComponents(defaultComponentOptions):
     type
       Pos = object
@@ -30,10 +33,14 @@ exportAll:
       Solid = object
         size: float32
       Input = object
+      Health = object
+        val, max: float32
       Draw = object
       Main = object
       Dir = object
         val: range[0..3]
+      DrawUnit = object
+        unit: Unit
       Building = object
         #bottom-left corner in tile coordinates
         x: int
@@ -42,7 +49,7 @@ exportAll:
       #buildings
 
       Conveyor = object
-
+  
   event(WorldCreate)
   event(WallChange, x = int, y = int)
   event(FloorChange, x = int, y = int)
@@ -77,6 +84,7 @@ makeContent:
   tungsten = Block()
   conveyor = Block(building: () => newEntityWith(Conveyor(), Dir()))
 
-  dagger = Unit()
+  dagger = Unit(health: 100, size: 0.5)
+  crawler = Unit(health: 50, size: 0.4)
 
   tungsten = Item()

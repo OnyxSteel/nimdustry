@@ -1,6 +1,8 @@
 import polymorph, simplex, common
 
-#TODO move?
+template makeUnit*(un: Unit, px, py: float32): EntityRef =
+  newEntityWith(Pos(x: px, y: py), Vel(), Health(max: un.health, val: un.health), Solid(size: un.size), DrawUnit(unit: un))
+
 proc inWorld*(x, y: int): bool {.inline.} = x < worldWidth and y < worldHeight and x >= 0 and y >= 0
 
 proc tile*(x, y: int): Tile =
