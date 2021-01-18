@@ -1,5 +1,5 @@
-import polymorph, content, fcore, ecs, tables, sugar
-export ecs
+import polymorph, fcore, ecs, tables, sugar, presets/[basic, effects, content]
+export ecs, basic, effects, content
 
 #contains all global types and variables
 #should not contain any logic
@@ -12,9 +12,6 @@ exportAll:
       build: EntityRef
     Team = distinct uint8
 
-    Content = ref object of RootObj
-      name: string
-      id: uint32
     Block = ref object of Content
       solid: bool
       building: proc(): EntityRef
@@ -26,8 +23,6 @@ exportAll:
       
   registerComponents(defaultComponentOptions):
     type
-      Pos = object
-        x, y: float32
       Vel = object
         x, y, rot: float32
       Solid = object
@@ -36,7 +31,6 @@ exportAll:
       Health = object
         val, max: float32
       Draw = object
-      Main = object
       Dir = object
         val: range[0..3]
       DrawUnit = object
@@ -67,13 +61,6 @@ exportAll:
     worldWidth = 32
     worldHeight = 32
     tiles: seq[Tile]
-  
-  #all content by ID
-  var 
-    contentList: seq[Content]
-    blockList: seq[Block]
-    itemList: seq[Item]
-    unitList: seq[Unit]
 
 makeContent:
   air = Block()
