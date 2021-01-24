@@ -23,6 +23,7 @@ if defined(emscripten):
 
   #extra flags for smaller sizes:
   # -s ASSERTIONS=0 -DNDEBUG -s MALLOC=emmalloc
+  #add '--preload-file assets' for sound support later.
   switch("passL", "-o build/web/index.html --shell-file fau/res/shell_minimal.html -O3 -s LLD_REPORT_UNDEFINED -s USE_SDL=2 -s ALLOW_MEMORY_GROWTH=1 --closure 1")
 else:
 
