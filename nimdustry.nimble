@@ -11,6 +11,8 @@ requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEA
 
 import strformat, os
 
+template shell(args: string) = echo staticExec(args)
+
 const
   app = "nimdustry"
 
@@ -20,17 +22,17 @@ const
   ]
 
 task pack, "Pack textures":
-  exec &"faupack -p:{getCurrentDir()}/assets-raw/sprites -o:{getCurrentDir()}/assets/atlas"
+  shell &"faupack -p:{getCurrentDir()}/assets-raw/sprites -o:{getCurrentDir()}/assets/atlas"
 
 task debug, "Debug build":
-  exec &"nim r -d:debug src/{app}"
+  shell &"nim r -d:debug src/{app}"
 
 task release, "Release build":
-  exec &"nim r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"
+  shell &"nim r -d:release -d:danger -d:noFont -o:build/{app} src/{app}"
 
 task web, "Deploy web build":
   mkDir "build/web"
-  exec &"nim c -f -d:emscripten -d:danger src/{app}.nim"
+  shell &"nim c -f -d:emscripten -d:danger src/{app}.nim"
   writeFile("build/web/index.html", readFile("build/web/index.html").replace("$title$", capitalizeAscii(app)))
 
 task deploy, "Build for all platforms":
@@ -46,9 +48,9 @@ task deploy, "Build for all platforms":
       dangerous = if name == "win32": "" else: "-d:danger"
 
     mkDir dir
-    exec &"nim --cpu:{cpu} --os:{os} --app:gui -f {args} {dangerous} -o:{bin} c src/{app}"
-    exec &"strip -s {bin}"
-    exec &"upx-ucl --best {bin}"
+    shell &"nim --cpu:{cpu} --os:{os} --app:gui -f {args} {dangerous} -o:{bin} c src/{app}"
+    shell &"strip -s {bin}"
+    shell &"upx-ucl --best {bin}"
 
   cd "build"
-  exec &"zip -9r {app}-web.zip web/*"
+  shell &"zip -9r {app}-web.zip web/*"
