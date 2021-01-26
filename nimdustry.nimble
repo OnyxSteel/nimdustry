@@ -11,7 +11,9 @@ requires "https://github.com/Anuken/fau#" & staticExec("git -C fau rev-parse HEA
 
 import strformat, os
 
-template shell(args: string) = echo staticExec(args)
+template shell(args: string) =
+  try: exec(args)
+  except OSError: quit(1)
 
 const
   app = "nimdustry"
@@ -36,7 +38,7 @@ task web, "Deploy web build":
   writeFile("build/web/index.html", readFile("build/web/index.html").replace("$title$", capitalizeAscii(app)))
 
 task deploy, "Build for all platforms":
-  `web Task`()
+  webTask()
 
   for name, os, cpu, args in builds.items:
     let
