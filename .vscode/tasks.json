@@ -4,7 +4,7 @@
     {
       "label": "debug",
       "type": "shell",
-      "command": "nake debug",
+      "command": "nimble debug",
       "problemMatcher": [],
       "group": {
         "kind": "build",
