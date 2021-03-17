@@ -8,7 +8,7 @@ sys("init", [Main]):
     initContent()
     generateWorld(128, 128)
 
-    makeUnit(unitDagger, worldWidth/2, worldHeight/2).addComponent Input()
+    makeUnit(unitDagger, worldWidth/2, worldHeight/2).add Input()
     discard makeUnit(unitCrawler, worldWidth/2 - 4, worldHeight/2 - 2)
     fau.pixelScl = 1.0 / tileSizePx
 
@@ -77,8 +77,7 @@ sys("draw", [Main]):
       setWall(tx, ty, if keyMouseRight.down: blockAir else: blockConveyor)
       let t = tile(tx, ty)
       if t.wall == blockConveyor:
-        var dir = t.build.fetchComponent Dir
-        dir.val = sys.dir
+        t.build.fetch(Dir).val = sys.Dir
 
     draw(layerFloor, proc() =
       drawFloor()

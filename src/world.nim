@@ -51,6 +51,6 @@ onWallChange:
   
   if not t.wall.building.isNil:
     let build = t.wall.building()
-    build.addComponent Building(x: event.x, y: event.y)
-    build.addComponent Pos(x: event.x.float32, y: event.y.float32)
+    build.add Building(x: event.x, y: event.y)
+    build.add Pos(x: event.x.float32, y: event.y.float32)
     setBuild(event.x, event.y, build)
