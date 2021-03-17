@@ -36,8 +36,6 @@ sys("followCam", [Pos, Input]):
   all:
     fau.cam.pos = vec2(item.pos.x, item.pos.y)
 
-template `[]`[T](entity: EntityRef, t: typedesc[T]): auto = entity.fetch(t)
-
 sys("draw", [Main]):
   vars:
     shadows: Framebuffer
@@ -79,7 +77,7 @@ sys("draw", [Main]):
       setWall(tx, ty, if keyMouseRight.down: blockAir else: blockConveyor)
       let t = tile(tx, ty)
       if t.wall == blockConveyor:
-        t.build[Dir].val = sys.dir
+        t.build.fetch(Dir).val = sys.dir
 
     draw(layerFloor, proc() =
       drawFloor()
