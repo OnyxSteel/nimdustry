@@ -3,6 +3,11 @@ import tables, math, random, common, sequtils, world, render
 #pack sprites on launch
 static: echo staticExec("faupack -p:../assets-raw/sprites -o:../assets/atlas")
 
+#prevent nil patch
+DrawPatch.onAdd:
+  if curComponent.patch.texture.isNil:
+    curComponent.patch = "error".patch
+
 sys("init", [Main]):
   init:
     initContent()
@@ -96,6 +101,10 @@ sys("drawUnits", [DrawUnit, Pos, Vel]):
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
     draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90)
+
+sys("drawPatch", [DrawPatch, Pos, Vel]):
+  all:
+    draw(item.drawPatch.patch, item.pos.x, item.pos.y, rotation = item.vel.rot)
 
 onWorldCreate:
   echo "World created: " & $worldWidth & " x " & $worldHeight

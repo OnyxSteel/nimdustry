@@ -35,6 +35,9 @@ exportAll:
         val: range[0..3]
       DrawUnit = object
         unit: Unit
+      DrawPatch = object
+        patch: Patch
+        rotOffset: float32
       Building = object
         #bottom-left corner in tile coordinates
         x: int
@@ -74,4 +77,5 @@ makeContent:
   dagger = Unit(health: 100, size: 0.5)
   crawler = Unit(health: 50, size: 0.4)
 
+  none = Item()
   tungsten = Item()
