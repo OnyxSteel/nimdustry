@@ -100,7 +100,7 @@ sys("drawUnits", [DrawUnit, Pos, Vel]):
 
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
-    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90)
+    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
 
 sys("drawPatch", [DrawPatch, Pos, Vel]):
   all:
