@@ -26,7 +26,7 @@ sys("control", [Input, Pos, Vel]):
 sys("rotate", [Pos, Vel]):
   all:
     if len2(item.vel.x, item.vel.y) >= 0.01:
-      item.vel.rot = item.vel.rot.aapproach(vec2(item.vel.x, item.vel.y).angle().radToDeg, 360.0 * fau.delta)
+      item.vel.rot = item.vel.rot.aapproach(vec2(item.vel.x, item.vel.y).angle, 360.0.rad * fau.delta)
 
 sys("moveSolid", [Pos, Vel, Solid]):
   all:
@@ -96,7 +96,7 @@ sys("draw", [Main]):
 
 sys("drawUnits", [DrawUnit, Pos, Vel]):
   all:
-    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90)
+    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90.rad)
 
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
