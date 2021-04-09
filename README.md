@@ -14,6 +14,7 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 - Learn more about Nim and lower-level programming
 - Return to pixel art, simplify the drawing process
 - See if it's feasible to avoid all text and UI *(both as a challenge and for technical reasons)*
+- Separate logic and rendering modules completely for better performance, dedicated server support & swappable renderers
 
 # Compiling
 

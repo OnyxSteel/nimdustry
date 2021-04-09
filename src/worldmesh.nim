@@ -46,7 +46,7 @@ proc initChunks*() =
 
   chunks = newSeq[Mesh](chunksX * chunksY)
 
-proc getMesh(cx, cy: int): Mesh = chunks[cx + cy * (chunksX)]
+proc getMesh(cx, cy: int): Mesh = chunks[cx + cy * chunksX]
 
 proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32, rotation = 0'f32) =
   let

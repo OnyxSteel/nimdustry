@@ -15,6 +15,7 @@ exportAll:
     Block = ref object of Content
       solid: bool
       building: proc(): EntityRef
+      #TODO (re)move rendering code?
       patches: seq[Patch]
     Item* = ref object of Content
     Unit* = ref object of Content
