@@ -57,9 +57,9 @@ exportAll:
     zoom = 38.0
     tileSizePx = 8
     shadowColor = rgba(0, 0, 0, 0.2)
-    layerFloor = 0'f32
-    layerShadow = 10'f32
-    layerWall = 20'f32
+    layerFloor = 0f
+    layerShadow = 10f
+    layerWall = 20f
 
   var
     worldWidth = 32

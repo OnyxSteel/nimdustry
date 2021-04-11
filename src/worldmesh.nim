@@ -48,7 +48,7 @@ proc initChunks*() =
 
 proc getMesh(cx, cy: int): Mesh = chunks[cx + cy * chunksX]
 
-proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32, rotation = 0'f32) =
+proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32, rotation = 0f) =
   let
     originX = width/2
     originY = height/2
@@ -100,20 +100,20 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
     r = hashInt(x + y * worldWidth)
   
   if floor.patches.len != 0:
-    sprite(mesh, floor.patches[r mod floor.patches.len], index, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+    sprite(mesh, floor.patches[r mod floor.patches.len], index, x.float32 - 0.5f, y.float32 - 0.5f, 1.0, 1.0)
 
   if over.patches.len != 0:
-    sprite(mesh, over.patches[r mod over.patches.len], index + layerSize * clOverlay.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+    sprite(mesh, over.patches[r mod over.patches.len], index + layerSize * clOverlay.int, x.float32 - 0.5f, y.float32 - 0.5f, 1.0, 1.0)
   else:
     clearSprite(mesh, index + layerSize * clOverlay.int)
   
   if wall.patches.len != 0 or wall.building.isNil.not:
-    sprite(mesh, "wallshadow".patch, index + layerSize * clWallShadow.int, x.float32 - 0.5'f32 - 1.px, y.float32 - 0.5'f32 - 1.px, 1.0 + 2.px, 1.0 + 2.px)
+    sprite(mesh, "wallshadow".patch, index + layerSize * clWallShadow.int, x.float32 - 0.5f - 1.px, y.float32 - 0.5f - 1.px, 1.0 + 2.px, 1.0 + 2.px)
   else:
     clearSprite(mesh, index + layerSize * clWallShadow.int)
 
   if wall.patches.len != 0 and wall.building.isNil:
-    sprite(mesh, wall.patches[r mod wall.patches.len], index + layerSize * clWall.int, x.float32 - 0.5'f32, y.float32 - 0.5'f32, 1.0, 1.0)
+    sprite(mesh, wall.patches[r mod wall.patches.len], index + layerSize * clWall.int, x.float32 - 0.5f, y.float32 - 0.5f, 1.0, 1.0)
   else:
     clearSprite(mesh, index + layerSize * clWall.int)
     
