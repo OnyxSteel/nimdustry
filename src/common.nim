@@ -21,6 +21,15 @@ exportAll:
     Unit* = ref object of Content
       health: float32
       size: float32
+
+    #inventory for things
+    Items = object
+      items: seq[int32]
+
+    #data for each team type
+    TeamData = object
+      items: Items
+
       
   registerComponents(defaultComponentOptions):
     type
@@ -54,17 +63,23 @@ exportAll:
   event(OverlayChange, x = int, y = int)
 
   const
-    zoom = 38.0
+    zoom = 40f
     tileSizePx = 8
+    pixelation = (zoom / tileSizePx).int
     shadowColor = rgba(0, 0, 0, 0.2)
     layerFloor = 0f
     layerShadow = 10f
     layerWall = 20f
+    layerEffect = 40f
+    palAccent = %"ffd37f"
+    palRemove = %"e55454"
 
   var
     worldWidth = 32
     worldHeight = 32
     tiles: seq[Tile]
+    #team data by team index
+    teams: array[Team, TeamData]
 
 makeContent:
   air = Block()

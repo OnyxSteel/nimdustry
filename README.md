@@ -22,4 +22,4 @@ A Nim version of Mindustry. Not intended to be a complete game. Partially made a
 2. `sudo apt install -y xorg-dev libgl1-mesa-dev` or equivalent packages
 3. `nimble debug`
 
-Builds are only tested on Linux. Windows is unlikely to work at this time.
+Builds are only tested on Linux. Building on Windows is not supported, although cross-compiling from Linux is possible.

@@ -35,5 +35,7 @@ sys("input", [Main]):
   start:
      if keyEscape.tapped: quitApp()
 
+makeTimedSystem()
+
 onWorldCreate:
   echo "World created: " & $worldWidth & " x " & $worldHeight
