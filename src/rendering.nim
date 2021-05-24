@@ -50,7 +50,7 @@ sys("draw", [Main]):
     shadows.resize(bw, bh)
     buffer.resize(bw, bh)
 
-    buffer.push()
+    buffer.push(colorClear)
 
     draw(1000, proc() =
       buffer.pop()
