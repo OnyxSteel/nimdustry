@@ -52,6 +52,9 @@ exportAll:
         #bottom-left corner in tile coordinates
         x: int
         y: int
+
+      StaticClip = object
+        rect: Rect
       
       #buildings
 

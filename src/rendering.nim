@@ -1,4 +1,4 @@
-import tables, math, random, common, sequtils, world, worldmesh
+import tables, math, random, common, sequtils, world, worldmesh, quadtree
 
 defineEffects:
   blockPlace(lifetime = 0.1f):
@@ -8,6 +8,18 @@ defineEffects:
 DrawPatch.onAdd:
   if curComponent.patch.texture.isNil:
     curComponent.patch = "error".patch
+
+type QuadRef = object
+  entity: EntityRef
+  x, y, w, h: float32
+
+sys("renderTree", [StaticClip]):
+  vars:
+    tree: Quadtree[QuadRef]
+  init:
+    sys.tree = newQuadtree[QuadRef](rect(-1f, -1f, worldWidth + 2, worldHeight + 2))
+  all:
+    discard
 
 sys("followCam", [Pos, Input]):
   all:
@@ -57,8 +69,8 @@ sys("draw", [Main]):
       buffer.blit()
     )
 
-    if fau.scrollY != 0:
-      sys.dir += sign(fau.scrollY).int
+    if fau.scroll.y != 0:
+      sys.dir += sign(fau.scroll.y).int
       sys.dir = sys.dir.emod(4)
 
     if keyMouseLeft.tapped or keyMouseRight.tapped:
@@ -78,7 +90,7 @@ sys("draw", [Main]):
     draw(layerFloor, proc() =
       drawFloor()
 
-      shadows.inside:
+      shadows.inside(colorClear):
         drawShadows()
       shadows.blit(color = shadowColor)
 
@@ -87,11 +99,11 @@ sys("draw", [Main]):
 
 sys("drawUnits", [DrawUnit, Pos, Vel]):
   all:
-    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, layerWall + 2, rotation = item.vel.rot - 90.rad)
+    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, z = layerWall + 2, rotation = item.vel.rot - 90.rad)
 
 sys("drawConveyor", [Conveyor, Pos, Dir]):
   all:
-    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
+    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
 
 sys("drawPatch", [DrawPatch, Pos, Vel]):
   all:
