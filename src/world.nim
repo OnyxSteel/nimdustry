@@ -53,4 +53,5 @@ onWallChange:
     let build = t.wall.building()
     build.add Building(x: event.x, y: event.y)
     build.add Pos(x: event.x.float32, y: event.y.float32)
+    build.add StaticClip(rect: rect(vec2(event.x, event.y) - 0.5f, 1f, 1f))
     setBuild(event.x, event.y, build)

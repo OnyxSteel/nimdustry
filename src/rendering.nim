@@ -11,15 +11,34 @@ DrawPatch.onAdd:
 
 type QuadRef = object
   entity: EntityRef
-  x, y, w, h: float32
+  bounds: Rect
 
-sys("renderTree", [StaticClip]):
+proc boundingBox(r: QuadRef): Rect {.inline.} = r.bounds
+
+sysMake("staticClip", [StaticClip]):
   vars:
     tree: Quadtree[QuadRef]
+    cseq: seq[QuadRef]
   init:
-    sys.tree = newQuadtree[QuadRef](rect(-1f, -1f, worldWidth + 2, worldHeight + 2))
-  all:
-    discard
+    sys.tree = newQuadtree[QuadRef](rect(1, 1, 1, 1))
+  added:
+    sys.tree.insert(QuadRef(bounds: item.staticClip.rect, entity: item.entity))
+  removed:
+    sys.tree.remove(QuadRef(bounds: item.staticClip.rect, entity: item.entity))
+  start:
+    sys.cseq.setLen 0
+    sys.tree.intersect(fau.cam.viewport, sys.cseq)
+    for child in sys.cseq:
+      child.entity.addOrUpdate Onscreen(frame: fau.frameId)
+
+onWorldCreate:
+  sysStaticClip.tree = newQuadtree[QuadRef](rect(-1f, -1f, worldWidth + 2, worldHeight + 2))
+
+#remove entities that are no longer on-screen
+sysMake("checkOnscreen", [Onscreen]):
+  all: #TODO considering streaming
+    if item.onscreen.frame != fau.frameId:
+      item.entity.remove Onscreen
 
 sys("followCam", [Pos, Input]):
   all:
@@ -101,11 +120,11 @@ sys("drawUnits", [DrawUnit, Pos, Vel]):
   all:
     draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, z = layerWall + 2, rotation = item.vel.rot - 90.rad)
 
-sys("drawConveyor", [Conveyor, Pos, Dir]):
+sys("drawConveyor", [Conveyor, Pos, Dir, Onscreen]):
   all:
     draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
 
-sys("drawPatch", [DrawPatch, Pos, Vel]):
+sys("drawPatch", [DrawPatch, Pos, Vel, Onscreen]):
   all:
     draw(item.drawPatch.patch, item.pos.x, item.pos.y, rotation = item.vel.rot)
 

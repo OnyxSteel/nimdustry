@@ -30,7 +30,6 @@ exportAll:
     TeamData = object
       items: Items
 
-      
   registerComponents(defaultComponentOptions):
     type
       Vel = object
@@ -50,11 +49,15 @@ exportAll:
         rotOffset: float32
       Building = object
         #bottom-left corner in tile coordinates
-        x: int
-        y: int
+        x, y: int
 
+      ## statically clipped in a quadtree, used for buildings
       StaticClip = object
         rect: Rect
+      
+      ## flag for objects that are clipped onscreen
+      Onscreen = object
+        frame: int64
       
       #buildings
 
