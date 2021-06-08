@@ -101,7 +101,7 @@ makeContent:
   tungsten = Block()
 
   conveyor = Block(building: () => newEntityWith(Conveyor(), Dir()))
-  mechanicalDrill = Block(size: 2, building: () => newEntityWith(DrawDrill(), Drill()))
+  mechanicalDrill = Block(size: 2, building: () => newEntityWith(DrawDrill(), Drill()), solid: true)
 
   dagger = Unit(health: 100, size: 0.5)
   crawler = Unit(health: 50, size: 0.4)

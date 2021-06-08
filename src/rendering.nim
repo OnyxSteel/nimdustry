@@ -108,7 +108,6 @@ sys("drawConveyor", [Conveyor, Pos, Dir, Onscreen]):
 sys("drawDrill", [DrawDrill, Pos, Onscreen, Building]):
   all:
     let name = item.building.kind.name
-    #TODO use block name.
     draw(name.patch, item.pos.x, item.pos.y, z = layerWall + 1)
     draw((name & "Rotator").patch, item.pos.x, item.pos.y, rotation = fau.time * 2f, z = layerWall + 1)
     draw((name & "Top").patch, item.pos.x, item.pos.y, z = layerWall + 1)
