@@ -105,9 +105,13 @@ sys("drawConveyor", [Conveyor, Pos, Dir, Onscreen]):
   all:
     draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
 
-sys("drawDrill", [DrawDrill, Pos, Onscreen]):
+sys("drawDrill", [DrawDrill, Pos, Onscreen, Building]):
   all:
-    draw(patch("mechanicalDrill"), item.pos.x, item.pos.y, z = layerWall + 1)
+    let name = item.building.kind.name
+    #TODO use block name.
+    draw(name.patch, item.pos.x, item.pos.y, z = layerWall + 1)
+    draw((name & "Rotator").patch, item.pos.x, item.pos.y, rotation = fau.time * 2f, z = layerWall + 1)
+    draw((name & "Top").patch, item.pos.x, item.pos.y, z = layerWall + 1)
 
 sys("drawPatch", [DrawPatch, Pos, Vel, Onscreen]):
   all:
