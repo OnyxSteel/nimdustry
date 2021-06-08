@@ -49,7 +49,6 @@ sys("draw", [Main]):
   vars:
     shadows: Framebuffer
     buffer: Framebuffer
-    dir: int
   
   init:
     sys.shadows = newFramebuffer()
@@ -88,24 +87,6 @@ sys("draw", [Main]):
       buffer.blit()
     )
 
-    if fau.scroll.y != 0:
-      sys.dir += sign(fau.scroll.y).int
-      sys.dir = sys.dir.emod(4)
-
-    if keyMouseLeft.tapped or keyMouseRight.tapped:
-      let
-        tx = mouseWorld().x.toTile
-        ty = mouseWorld().y.toTile
-        res = if keyMouseRight.down: blockAir else: blockConveyor
-
-      if tile(tx, ty).wall != res:
-        setWall(tx, ty, res)
-        effectBlockPlace(tx, ty, rot = 1f, col = if keyMouseRight.down: palRemove else: palAccent)
-
-        let t = tile(tx, ty)
-        if t.wall == blockConveyor:
-          t.build.fetch(Dir).val = sys.dir
-
     draw(layerFloor, proc() =
       drawFloor()
 
@@ -123,6 +104,10 @@ sys("drawUnits", [DrawUnit, Pos, Vel]):
 sys("drawConveyor", [Conveyor, Pos, Dir, Onscreen]):
   all:
     draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
+
+sys("drawDrill", [DrawDrill, Pos, Onscreen]):
+  all:
+    draw(patch("mechanicalDrill"), item.pos.x, item.pos.y, z = layerWall + 1)
 
 sys("drawPatch", [DrawPatch, Pos, Vel, Onscreen]):
   all:

@@ -8,19 +8,33 @@ proc inWorld*(x, y: int): bool {.inline.} = x < worldWidth and y < worldHeight a
 proc tile*(x, y: int): Tile =
   if not inWorld(x, y): Tile(floor: blockGrass, wall: blockStoneWall, overlay: blockAir) else: tiles[x + y*worldWidth]
 
+template tile*(idx: int): Tile = tiles[idx]
+
 proc setWall*(x, y: int, b: Block) =
   if inWorld(x, y): 
-    tiles[x + y*worldWidth].wall = b
-    fire(WallChange(x: x, y: y))
+    fire(WallSet(x: x, y: y, wall: b))
 
-proc setBuild*(x, y: int, b: EntityRef) =
-  if inWorld(x, y): 
-    tiles[x + y*worldWidth].build = b
-
+template clearBuild*(entity: EntityRef) =
+  let t = entity.fetch(Building)
+  for dx in 0..<t.kind.size:
+    for dy in 0..<t.kind.size:
+      let 
+        x = dx + t.x
+        y = dy + t.y
+        idx = x + y*worldWidth
+      
+      idx.tile.wall = blockAir
+      idx.tile.build = NoEntityRef
+      fire(WallChange(x: x, y: y))
+  
+  entity.delete()
+      
 proc toTile*(c: float32): int {.inline.} = (c + 0.5).int
 
 proc solid*(x, y: int): bool = tile(x, y).wall.solid
 #proc toTile*(c: Vec2): Vec2 {.inline.} = vec2(c.x + 0.5, c.y + 0.5)
+
+proc offset*(b: Block): float32 {.inline.} = (b.size.float32 - 1f) / 2f
 
 proc generateWorld*(width, height: int) =
   worldWidth = width
@@ -42,16 +56,43 @@ proc generateWorld*(width, height: int) =
   fire(WorldCreate())
 
 #update wall entities when walls change
-onWallChange: 
-  let t = tile(event.x, event.y)
+onWallSet:
+  let base = tile(event.x, event.y)
+  let build = if event.wall.building.isNil: NoEntityRef else: event.wall.building()
 
-  if t.build != NoEntityRef:
-    t.build.delete()
-    setBuild(event.x, event.y, NoEntityRef)
-  
-  if not t.wall.building.isNil:
-    let build = t.wall.building()
-    build.add Building(x: event.x, y: event.y)
-    build.add Pos(x: event.x.float32, y: event.y.float32)
-    build.add StaticClip(rect: rect(vec2(event.x, event.y) - 0.5f, 1f, 1f))
-    setBuild(event.x, event.y, build)
+  if build != NoEntityRef:
+    build.add cl(
+      Building(x: event.x, y: event.y, kind: event.wall), 
+      Pos(x: event.x.float32 + (event.wall.size - 1)/2f, y: event.y.float32 + (event.wall.size - 1)/2f), 
+      StaticClip(rect: rect(vec2(event.x, event.y) - 0.5f, event.wall.size, event.wall.size))
+    )
+
+  #phase 1: delete old buildings
+  for dx in 0..<event.wall.size:
+    for dy in 0..<event.wall.size:
+      let 
+        x = event.x + dx
+        y = event.y + dy
+        idx = x + y*worldWidth
+        t = idx.tile
+
+      #found a building, kill it
+      if t.build != NoEntityRef:
+        clearBuild(t.build)
+      else:
+        #otherwise, replace, but do not fire any extra events; they will be fired later
+        idx.tile.wall = blockAir
+
+  #phase 2: place everything necessary down
+  for dx in 0..<event.wall.size:
+    for dy in 0..<event.wall.size:
+      let 
+        x = event.x + dx
+        y = event.y + dy
+        idx = x + y*worldWidth
+        t = idx.tile
+
+      idx.tile.wall = event.wall
+      idx.tile.build = build
+      
+      fire(WallChange(x: x, y: y))

@@ -5,27 +5,28 @@ export ecs, basic, effects, content
 #should not contain any logic
 
 exportAll:
+
+  defineContentTypes:
+    type
+      Block = ref object of Content
+        solid: bool
+        building: proc(): EntityRef
+        #TODO (re)move rendering code?
+        patches: seq[Patch]
+        size: int = 1
+      Item* = ref object of Content
+      Unit* = ref object of Content
+        health: float32 = 10
+        size: float32 = 0.5f
   
   type
     Tile = object
       floor, wall, overlay: Block
       build: EntityRef
     Team = distinct uint8
-
-    Block = ref object of Content
-      solid: bool
-      building: proc(): EntityRef
-      #TODO (re)move rendering code?
-      patches: seq[Patch]
-    Item* = ref object of Content
-    Unit* = ref object of Content
-      health: float32
-      size: float32
-
     #inventory for things
     Items = object
       items: seq[int32]
-
     #data for each team type
     TeamData = object
       items: Items
@@ -47,9 +48,11 @@ exportAll:
       DrawPatch = object
         patch: Patch
         rotOffset: float32
+      DrawDrill = object
       Building = object
         #bottom-left corner in tile coordinates
         x, y: int
+        kind: Block
 
       ## statically clipped in a quadtree, used for buildings
       StaticClip = object
@@ -62,8 +65,10 @@ exportAll:
       #buildings
 
       Conveyor = object
+      Drill = object
   
   event(WorldCreate)
+  event(WallSet, x = int, y = int, wall = Block)
   event(WallChange, x = int, y = int)
   event(FloorChange, x = int, y = int)
   event(OverlayChange, x = int, y = int)
@@ -94,7 +99,9 @@ makeContent:
   iceWall = Block(solid: true)
   stoneWall = Block(solid: true)
   tungsten = Block()
+
   conveyor = Block(building: () => newEntityWith(Conveyor(), Dir()))
+  mechanicalDrill = Block(size: 2, building: () => newEntityWith(DrawDrill(), Drill()))
 
   dagger = Unit(health: 100, size: 0.5)
   crawler = Unit(health: 50, size: 0.4)
