@@ -37,6 +37,7 @@ sys("control", [Input, Pos, Vel]):
       if tile(pos).wall != blockAir:
         setWall(pos, blockAir)
         effectBlockPlace(pos.x, pos.y, rot = 1f, col = palRemove)
+        soundBreak.play()
 
     #place
     if keyMouseLeft.tapped:
@@ -44,6 +45,7 @@ sys("control", [Input, Pos, Vel]):
 
       if canPlace(pos, sys.curBlock):
         setWall(pos, sys.curBlock)
+        soundPlace.play()
 
         let t = tile(pos)
         if t.build != NoEntityRef and t.build.has(Dir):
