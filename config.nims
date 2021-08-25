@@ -1,8 +1,6 @@
 --path:"fau"
 --hints:off
-
-when not defined(Android):
-  --gc:arc
+--gc:arc
 
 when not defined(debug):
   --passC:"-flto"

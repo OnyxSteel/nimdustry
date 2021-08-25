@@ -21,7 +21,7 @@ sysMake("staticClip", [StaticClip]):
     cseq: seq[QuadRef]
   init:
     #TODO resize on world resize!
-    sys.tree = newQuadtree[QuadRef](rect(0, 0, 128, 128))
+    sys.tree = newQuadtree[QuadRef](rect(-0.5f, -0.5f, 128, 128))
   added:
     sys.tree.insert(QuadRef(bounds: item.staticClip.rect, entity: item.entity))
   removed:
@@ -29,7 +29,7 @@ sysMake("staticClip", [StaticClip]):
   start:
     sys.cseq.setLen 0
     sys.tree.intersect(fau.cam.viewport, sys.cseq)
-    for child in sys.tree:
+    for child in sys.cseq:
       child.entity.addOrUpdate Onscreen(frame: fau.frameId)
 
 onWorldCreate:

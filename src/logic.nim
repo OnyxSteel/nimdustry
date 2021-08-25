@@ -31,25 +31,21 @@ sys("control", [Input, Pos, Vel]):
     
     #delete
     if keyMouseRight.tapped:
-      let
-        tx = mouseWorld().x.toTile
-        ty = mouseWorld().y.toTile
+      let pos = mouseWorld().toTile
 
-      #todo canBreak
-      if tile(tx, ty).wall != blockAir:
-        setWall(tx, ty, blockAir)
-        effectBlockPlace(tx, ty, rot = 1f, col = palRemove)
+      #TODO canBreak
+      if tile(pos).wall != blockAir:
+        setWall(pos, blockAir)
+        effectBlockPlace(pos.x, pos.y, rot = 1f, col = palRemove)
 
     #place
     if keyMouseLeft.tapped:
-      let
-        tx = (mouseWorld().x - sys.curBlock.offset).toTile
-        ty = (mouseWorld().y - sys.curBlock.offset).toTile
+      let pos = toTile(mouseWorld() - sys.curBlock.offset.vec2)
 
-      if tile(tx, ty).wall != sys.curBlock:
-        setWall(tx, ty, sys.curBlock)
+      if canPlace(pos, sys.curBlock):
+        setWall(pos, sys.curBlock)
 
-        let t = tile(tx, ty)
+        let t = tile(pos)
         if t.build != NoEntityRef and t.build.has(Dir):
           t.build.fetch(Dir).val = sys.dir
         
@@ -59,7 +55,7 @@ sys("control", [Input, Pos, Vel]):
 
 sys("rotate", [Pos, Vel]):
   all:
-    if len2(item.vel.x, item.vel.y) >= 0.01:
+    if item.vel.vec2.len2 >= 0.01:
       item.vel.rot = item.vel.rot.aapproach(vec2(item.vel.x, item.vel.y).angle, 360.0.rad * fau.delta)
 
 sys("moveSolid", [Pos, Vel, Solid]):

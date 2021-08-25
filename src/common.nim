@@ -90,6 +90,7 @@ exportAll:
     teamSharded = 1.Team
     teamCrux = 2.Team
 
+  #TODO global state bad???
   var
     worldWidth = 32
     worldHeight = 32
@@ -108,7 +109,6 @@ makeContent:
   conveyor = Block(create: () => newEntityWith(Conveyor(), Dir()))
   mechanicalDrill = Block(size: 2, solid: true, create: () => newEntityWith(DrawDrill(), Drill()))
 
-  #newEntityWith(Pos(x: px, y: py), Vel(), Health(max: un.health, val: un.health), Solid(size: un.size), DrawUnit(unit: un))
   dagger = Unit(create: () => newEntityWith(Health(val: 100), Solid(size: 0.5)))
   crawler = Unit(create: () => newEntityWith(Health(val: 50), Solid(size: 0.4)))
 

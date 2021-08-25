@@ -18,11 +18,24 @@ proc inWorld*(x, y: int): bool {.inline.} = x < worldWidth and y < worldHeight a
 proc tile*(x, y: int): Tile =
   if not inWorld(x, y): Tile(floor: blockGrass, wall: blockStoneWall, overlay: blockAir) else: tiles[x + y*worldWidth]
 
+proc tile*(pos: Vec2i): Tile {.inline.} = tile(pos.x, pos.y)
+
 template tile*(idx: int): Tile = tiles[idx]
+
+proc canPlace*(pos: Vec2i, b: Block): bool =
+  let s = b.size
+  for x in 0..<s:
+    for y in 0..<s:
+      if tile(pos + vec2i(x, y)).wall.solid:
+        return false
+  
+  return true
 
 proc setWall*(x, y: int, b: Block) =
   if inWorld(x, y): 
     fire(WallSet(x: x, y: y, wall: b))
+
+proc setWall*(pos: Vec2i, b: Block) {.inline.} = setWall(pos.x, pos.y, b)
 
 template clearBuild*(entity: EntityRef) =
   let t = entity.fetch(Building)
@@ -40,6 +53,8 @@ template clearBuild*(entity: EntityRef) =
   entity.delete()
       
 proc toTile*(c: float32): int {.inline.} = (c + 0.5).int
+
+proc toTile*(v: Vec2): Vec2i {.inline.} = vec2i(v.x.toTile, v.y.toTile)
 
 proc solid*(x, y: int): bool = tile(x, y).wall.solid
 #proc toTile*(c: Vec2): Vec2 {.inline.} = vec2(c.x + 0.5, c.y + 0.5)
