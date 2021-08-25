@@ -107,12 +107,12 @@ proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
   else:
     clearSprite(mesh, index + layerSize * clOverlay.int)
   
-  if wall.patches.len != 0 or wall.building.isNil.not:
+  if wall.patches.len != 0 or tile.build != NoEntityRef:
     sprite(mesh, "wallshadow".patch, index + layerSize * clWallShadow.int, x.float32 - 0.5f - 1.px, y.float32 - 0.5f - 1.px, 1.0 + 2.px, 1.0 + 2.px)
   else:
     clearSprite(mesh, index + layerSize * clWallShadow.int)
 
-  if wall.patches.len != 0 and wall.building.isNil:
+  if wall.patches.len != 0 and tile.build == NoEntityRef:
     sprite(mesh, wall.patches[r mod wall.patches.len], index + layerSize * clWall.int, x.float32 - 0.5f, y.float32 - 0.5f, 1.0, 1.0)
   else:
     clearSprite(mesh, index + layerSize * clWall.int)

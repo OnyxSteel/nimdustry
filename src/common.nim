@@ -10,14 +10,13 @@ exportAll:
     type
       Block = ref object of Content
         solid: bool
-        building: proc(): EntityRef
+        create: proc(): EntityRef = () => NoEntityRef
         #TODO (re)move rendering code?
         patches: seq[Patch]
         size: int = 1
       Item* = ref object of Content
       Unit* = ref object of Content
-        health: float32 = 10
-        size: float32 = 0.5f
+        create: proc(): EntityRef = () => NoEntityRef
   
   type
     Tile = object
@@ -39,7 +38,7 @@ exportAll:
         size: float32
       Input = object
       Health = object
-        val, max: float32
+        val: float32
       Draw = object
       Dir = object
         val: range[0..3]
@@ -78,12 +77,18 @@ exportAll:
     tileSizePx = 8
     pixelation = (zoom / tileSizePx).int
     shadowColor = rgba(0, 0, 0, 0.2)
+    
     layerFloor = 0f
     layerShadow = 10f
     layerWall = 20f
     layerEffect = 40f
+
     palAccent = %"ffd37f"
     palRemove = %"e55454"
+
+    teamDerelict = 0.Team
+    teamSharded = 1.Team
+    teamCrux = 2.Team
 
   var
     worldWidth = 32
@@ -100,11 +105,12 @@ makeContent:
   stoneWall = Block(solid: true)
   tungsten = Block()
 
-  conveyor = Block(building: () => newEntityWith(Conveyor(), Dir()))
-  mechanicalDrill = Block(size: 2, building: () => newEntityWith(DrawDrill(), Drill()), solid: true)
+  conveyor = Block(create: () => newEntityWith(Conveyor(), Dir()))
+  mechanicalDrill = Block(size: 2, solid: true, create: () => newEntityWith(DrawDrill(), Drill()))
 
-  dagger = Unit(health: 100, size: 0.5)
-  crawler = Unit(health: 50, size: 0.4)
+  #newEntityWith(Pos(x: px, y: py), Vel(), Health(max: un.health, val: un.health), Solid(size: un.size), DrawUnit(unit: un))
+  dagger = Unit(create: () => newEntityWith(Health(val: 100), Solid(size: 0.5)))
+  crawler = Unit(create: () => newEntityWith(Health(val: 50), Solid(size: 0.4)))
 
   none = Item()
   tungsten = Item()

@@ -1,7 +1,17 @@
 import polymorph, simplex, common
 
 template makeUnit*(un: Unit, px, py: float32): EntityRef =
-  newEntityWith(Pos(x: px, y: py), Vel(), Health(max: un.health, val: un.health), Solid(size: un.size), DrawUnit(unit: un))
+  let result = un.create()
+  if result != NoEntityRef:
+    #add basic components, may be changed later for more flexibility
+    result.add cl(
+      Vel(),
+      Pos(x: px, y: py),
+      DrawUnit(unit: un)
+    )
+
+    #TODO max health
+  result
 
 proc inWorld*(x, y: int): bool {.inline.} = x < worldWidth and y < worldHeight and x >= 0 and y >= 0
 
@@ -58,7 +68,7 @@ proc generateWorld*(width, height: int) =
 #update wall entities when walls change
 onWallSet:
   let base = tile(event.x, event.y)
-  let build = if event.wall.building.isNil: NoEntityRef else: event.wall.building()
+  let build = event.wall.create()
 
   if build != NoEntityRef:
     build.add cl(

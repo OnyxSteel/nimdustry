@@ -13,7 +13,7 @@ sys("init", [Main]):
 
 
 sys("control", [Input, Pos, Vel]):
-  vars:
+  fields:
     dir: int
     curBlock: Block
 

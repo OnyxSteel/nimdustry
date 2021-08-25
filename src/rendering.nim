@@ -16,11 +16,12 @@ type QuadRef = object
 proc boundingBox(r: QuadRef): Rect {.inline.} = r.bounds
 
 sysMake("staticClip", [StaticClip]):
-  vars:
+  fields:
     tree: Quadtree[QuadRef]
     cseq: seq[QuadRef]
   init:
-    sys.tree = newQuadtree[QuadRef](rect(1, 1, 1, 1))
+    #TODO resize on world resize!
+    sys.tree = newQuadtree[QuadRef](rect(0, 0, 128, 128))
   added:
     sys.tree.insert(QuadRef(bounds: item.staticClip.rect, entity: item.entity))
   removed:
@@ -28,7 +29,7 @@ sysMake("staticClip", [StaticClip]):
   start:
     sys.cseq.setLen 0
     sys.tree.intersect(fau.cam.viewport, sys.cseq)
-    for child in sys.cseq:
+    for child in sys.tree:
       child.entity.addOrUpdate Onscreen(frame: fau.frameId)
 
 onWorldCreate:
@@ -46,7 +47,7 @@ sys("followCam", [Pos, Input]):
     fau.cam.pos += vec2((fau.widthf mod pixelation) / pixelation, (fau.heightf mod pixelation) / pixelation) * fau.pixelScl
 
 sys("draw", [Main]):
-  vars:
+  fields:
     shadows: Framebuffer
     buffer: Framebuffer
   
