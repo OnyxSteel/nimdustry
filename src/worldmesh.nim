@@ -2,11 +2,12 @@ import math, common, world
 
 const 
   chunkSize = 40
-  spriteSize = (2 + 2) * 4 #pos + uv
-  layerSize = chunkSize * chunkSize * spriteSize
+  layerSize = chunkSize * chunkSize * 4
+
+type CMesh = GenericMesh[SVert2]
 
 var 
-  chunks: seq[Mesh]
+  chunks: seq[CMesh]
   chunksX: int
   chunksY: int
   chunkShader: Shader
@@ -22,21 +23,21 @@ proc initChunks*() =
   if chunkShader.isNil:
     chunkShader = newShader(
     """
-    attribute vec4 a_position;
-    attribute vec2 a_texc;
+    attribute vec4 a_pos;
+    attribute vec2 a_uv;
     uniform mat4 u_proj;
-    varying vec2 v_texc;
+    varying vec2 v_uv;
     void main(){
-      v_texc = a_texc;
-      gl_Position = u_proj * a_position;
+      v_uv = a_uv;
+      gl_Position = u_proj * a_pos;
     }
     """,
 
     """
-    varying vec2 v_texc;
+    varying vec2 v_uv;
     uniform sampler2D u_texture;
     void main(){
-      gl_FragColor = texture2D(u_texture, v_texc);
+      gl_FragColor = texture2D(u_texture, v_uv);
     }
     """
     )
@@ -44,11 +45,11 @@ proc initChunks*() =
   chunksX = (worldWidth / chunkSize).ceil.int
   chunksY = (worldHeight / chunkSize).ceil.int
 
-  chunks = newSeq[Mesh](chunksX * chunksY)
+  chunks = newSeq[CMesh](chunksX * chunksY)
 
-proc getMesh(cx, cy: int): Mesh = chunks[cx + cy * chunksX]
+proc getMesh(cx, cy: int): CMesh = chunks[cx + cy * chunksX]
 
-proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32, rotation = 0f) =
+proc spriteRotTODO(mesh: CMesh, region: Patch, idx: int, x, y, width, height: float32, rotation = 0f) =
   let
     originX = width/2
     originY = height/2
@@ -75,24 +76,24 @@ proc spriteRotTODO(mesh: Mesh, region: Patch, idx: int, x, y, width, height: flo
     v2 = region.v
     verts = addr mesh.vertices
 
-  verts.minsert(idx, [x1, y1, u, v, x2, y2, u, v2, x3, y3, u2, v2, x4, y4, u2, v])
-  mesh.updateVertices(idx..<(idx+spriteSize))
+  verts.minsert(idx, [svert2(x1, y1, u, v), svert2(x2, y2, u, v2), svert2(x3, y3, u2, v2), svert2(x4, y4, u2, v)])
+  mesh.updateVertices(idx..<(idx+4))
 
-proc sprite(mesh: Mesh, region: Patch, idx: int, x, y, width, height: float32) =
+proc sprite(mesh: CMesh, region: Patch, idx: int, x, y, width, height: float32) =
   let
     x2 = width + x
     y2 = height + y
     verts = addr mesh.vertices
 
-  verts.minsert(idx, [x, y, region.u, region.v2, x, y2, region.u, region.v, x2, y2, region.u2, region.v, x2, y, region.u2, region.v2])
-  mesh.updateVertices(idx..<(idx+spriteSize))
+  verts.minsert(idx, [svert2(x, y, region.u, region.v2), svert2(x, y2, region.u, region.v), svert2(x2, y2, region.u2, region.v), svert2(x2, y, region.u2, region.v2)])
+  mesh.updateVertices(idx..<(idx+4))
 
-proc clearSprite(mesh: Mesh, idx: int) =
-  zeroMem(addr mesh.vertices[idx], spriteSize * 4)
-  mesh.updateVertices(idx..<(idx+spriteSize))
+proc clearSprite(mesh: CMesh, idx: int) =
+  zeroMem(addr mesh.vertices[idx], SVert2.sizeOf * 4)
+  mesh.updateVertices(idx..<(idx+4))
 
 #TODO inline maybe
-proc updateSprite(mesh: Mesh, tile: Tile, x, y, index: int) =
+proc updateSprite(mesh: CMesh, tile: Tile, x, y, index: int) =
   let 
     floor = tile.floor
     over = tile.overlay
@@ -131,7 +132,7 @@ proc updateMesh*(x, y: int) =
         cx = x mod chunkSize
         cy = y mod chunkSize
       
-      updateSprite(mesh, t, x, y, (cx + cy*chunkSize) * spriteSize)
+      updateSprite(mesh, t, x, y, (cx + cy*chunkSize) * 4)
 
 proc cacheChunk(cx, cy: int) =
   let
@@ -143,10 +144,9 @@ proc cacheChunk(cx, cy: int) =
     j = 0
     i = 0
 
-  var mesh = newMesh(
-    @[attribPos, attribTexCoords],
-    vertices = newSeq[Glfloat](size * spriteSize),
-    indices = newSeq[Glushort](size * 6)
+  var mesh = newGenericMesh[SVert2](
+    vertices = newSeq[SVert2](size * 4),
+    indices = newSeq[Index](size * 6)
   )
 
   chunks[cx + cy*chunksX] = mesh
@@ -154,7 +154,7 @@ proc cacheChunk(cx, cy: int) =
   let indices = addr mesh.indices
   
   while i < len:
-    indices.minsert(i, [j.GLushort, (j+1).GLushort, (j+2).GLushort, (j+2).GLushort, (j+3).GLushort, (j).GLushort])
+    indices.minsert(i, [j.Index, (j+1).Index, (j+2).Index, (j+2).Index, (j+3).Index, (j).Index])
     i += 6
     j += 4
   
@@ -165,7 +165,7 @@ proc cacheChunk(cx, cy: int) =
       t = tile(x, y)
 
     if x < worldWidth and y < worldHeight:
-      updateSprite(mesh, t, x, y, index * spriteSize)
+      updateSprite(mesh, t, x, y, index * 4)
 
 proc drawChunks(layerFrom, layerTo: ChunkLayer) =
 

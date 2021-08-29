@@ -2,7 +2,7 @@ import tables, math, random, common, sequtils, world, worldmesh, quadtree
 
 defineEffects:
   blockPlace(lifetime = 0.1f):
-    lineSquare(e.x, e.y, e.rotation/2f + 4.px * e.fin, stroke = 2f.px * e.fout, color = e.color, z = layerEffect)
+    lineSquare(e.pos, e.rotation/2f + 4.px * e.fin, stroke = 2f.px * e.fout, color = e.color, z = layerEffect)
 
 #prevent nil patch
 DrawPatch.onAdd:
@@ -100,21 +100,21 @@ sys("draw", [Main]):
 
 sys("drawUnits", [DrawUnit, Pos, Vel]):
   all:
-    draw(item.drawUnit.unit.name.patch, item.pos.x, item.pos.y, z = layerWall + 2, rotation = item.vel.rot - 90.rad)
+    draw(item.drawUnit.unit.name.patch, item.pos.vec2, z = layerWall + 2, rotation = item.vel.rot - 90.rad)
 
 sys("drawConveyor", [Conveyor, Pos, Dir, Onscreen]):
   all:
-    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.x, item.pos.y, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
+    draw(patch("conveyor-0-" & $((fau.time * 15.0).int mod 4)), item.pos.vec2, z = layerWall + 1, rotation = item.dir.val.float32 * 90.rad)
 
 sys("drawDrill", [DrawDrill, Pos, Onscreen, Building]):
   all:
     let name = item.building.kind.name
-    draw(name.patch, item.pos.x, item.pos.y, z = layerWall + 1)
-    draw((name & "Rotator").patch, item.pos.x, item.pos.y, rotation = fau.time * 2f, z = layerWall + 1)
-    draw((name & "Top").patch, item.pos.x, item.pos.y, z = layerWall + 1)
+    draw(name.patch, item.pos.vec2, z = layerWall + 1)
+    draw((name & "Rotator").patch, item.pos.vec2, rotation = fau.time * 2f, z = layerWall + 1)
+    draw((name & "Top").patch, item.pos.vec2, z = layerWall + 1)
 
 sys("drawPatch", [DrawPatch, Pos, Vel, Onscreen]):
   all:
-    draw(item.drawPatch.patch, item.pos.x, item.pos.y, rotation = item.vel.rot)
+    draw(item.drawPatch.patch, item.pos.vec2, rotation = item.vel.rot)
 
 makeEffectsSystem()

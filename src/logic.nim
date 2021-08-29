@@ -30,16 +30,16 @@ sys("control", [Input, Pos, Vel]):
     
     #delete
     if keyMouseRight.tapped:
-      let pos = mouseWorld().toTile
+      let pos = fau.mouseWorld.toTile
 
       #TODO canBreak
       if tile(pos).wall != blockAir:
         setWall(pos, blockAir)
-        effectBlockPlace(pos.x, pos.y, rot = 1f, col = palRemove)
+        effectBlockPlace(pos.vec2, rot = 1f, col = palRemove)
 
     #place
     if keyMouseLeft.tapped:
-      let pos = toTile(mouseWorld() - sys.curBlock.offset.vec2)
+      let pos = toTile(fau.mouseWorld - sys.curBlock.offset.vec2)
 
       if canPlace(pos, sys.curBlock):
         setWall(pos, sys.curBlock)
@@ -50,7 +50,7 @@ sys("control", [Input, Pos, Vel]):
         
         if t.build != NoEntityRef:
           let pos = t.build.fetch(Pos)
-          effectBlockPlace(pos.x, pos.y, rot = 1f, col = palAccent)
+          effectBlockPlace(pos.vec2, rot = 1f, col = palAccent)
 
 sys("rotate", [Pos, Vel]):
   all:
