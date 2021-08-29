@@ -22,8 +22,7 @@ sys("control", [Input, Pos, Vel]):
 
   all:
     let v = vec2(axis(keyA, keyD).float32, axis(KeyCode.keyS, keyW).float32).lim(1) * 10 * fau.delta
-    item.vel.x += v.x
-    item.vel.y += v.y
+    item.vel.vec += v
 
     if fau.scroll.y != 0:
       sys.dir += sign(fau.scroll.y).int
@@ -37,7 +36,6 @@ sys("control", [Input, Pos, Vel]):
       if tile(pos).wall != blockAir:
         setWall(pos, blockAir)
         effectBlockPlace(pos.x, pos.y, rot = 1f, col = palRemove)
-        soundBreak.play()
 
     #place
     if keyMouseLeft.tapped:
@@ -45,7 +43,6 @@ sys("control", [Input, Pos, Vel]):
 
       if canPlace(pos, sys.curBlock):
         setWall(pos, sys.curBlock)
-        soundPlace.play()
 
         let t = tile(pos)
         if t.build != NoEntityRef and t.build.has(Dir):
@@ -57,17 +54,16 @@ sys("control", [Input, Pos, Vel]):
 
 sys("rotate", [Pos, Vel]):
   all:
-    if item.vel.vec2.len2 >= 0.01:
-      item.vel.rot = item.vel.rot.aapproach(vec2(item.vel.x, item.vel.y).angle, 360.0.rad * fau.delta)
+    if item.vel.vec.len2 >= 0.01:
+      item.vel.rot = item.vel.rot.aapproach(item.vel.vec.angle, 360.0.rad * fau.delta)
 
 sys("moveSolid", [Pos, Vel, Solid]):
   all:
-    let delta = moveDelta(rectCenter(item.pos.x, item.pos.y, item.solid.size), item.vel.x, item.vel.y, proc(x, y: int): bool = solid(x, y))
+    let delta = moveDelta(rectCenter(item.pos.x, item.pos.y, item.solid.size), item.vel.vec, proc(x, y: int): bool = solid(x, y))
     item.pos.x += delta.x
     item.pos.y += delta.y
 
-    item.vel.x = 0
-    item.vel.y = 0
+    item.vel.vec = vec2(0, 0)
 
 sys("input", [Main]):
   start:

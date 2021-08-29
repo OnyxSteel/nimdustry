@@ -33,7 +33,8 @@ exportAll:
   registerComponents(defaultComponentOptions):
     type
       Vel = object
-        x, y, rot: float32
+        vec: Vec2
+        rot: float32
       Solid = object
         size: float32
       Input = object

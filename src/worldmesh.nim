@@ -181,10 +181,10 @@ proc drawChunks(layerFrom, layerTo: ChunkLayer) =
   chunkShader.setmat4("u_proj", fau.cam.mat)
 
   let 
-    minx = ((fau.cam.pos.x - fau.cam.w/2) / chunkSize).floor.int
-    miny = ((fau.cam.pos.y - fau.cam.h/2) / chunkSize).floor.int
-    maxx = ((fau.cam.pos.x + fau.cam.w/2) / chunkSize).ceil.int
-    maxy = ((fau.cam.pos.y + fau.cam.h/2) / chunkSize).ceil.int
+    minx = ((fau.cam.pos.x - fau.cam.width/2) / chunkSize).floor.int
+    miny = ((fau.cam.pos.y - fau.cam.height/2) / chunkSize).floor.int
+    maxx = ((fau.cam.pos.x + fau.cam.width/2) / chunkSize).ceil.int
+    maxy = ((fau.cam.pos.y + fau.cam.height/2) / chunkSize).ceil.int
   
   for cx in minx..maxx:
     for cy in miny..maxy:
