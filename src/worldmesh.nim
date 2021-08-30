@@ -4,7 +4,7 @@ const
   chunkSize = 40
   layerSize = chunkSize * chunkSize * 4
 
-type CMesh = GenericMesh[SVert2]
+type CMesh = Mesh[SVert2]
 
 var 
   chunks: seq[CMesh]
@@ -144,7 +144,7 @@ proc cacheChunk(cx, cy: int) =
     j = 0
     i = 0
 
-  var mesh = newGenericMesh[SVert2](
+  var mesh = newMesh[SVert2](
     vertices = newSeq[SVert2](size * 4),
     indices = newSeq[Index](size * 6)
   )

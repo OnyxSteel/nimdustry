@@ -70,7 +70,7 @@ sys("draw", [Main]):
 
   start:
 
-    fau.cam.resize(fau.widthf / zoom, fau.heightf / zoom)
+    fau.cam.update(fau.screen / zoom)
     fau.cam.use()
 
     let
