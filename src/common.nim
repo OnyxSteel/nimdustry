@@ -93,8 +93,8 @@ exportAll:
 
   #TODO global state bad???
   var
-    worldWidth = 32
-    worldHeight = 32
+    worldWidth = 40
+    worldHeight = 40
     tiles: seq[Tile]
     #team data by team index
     teams: array[Team, TeamData]
